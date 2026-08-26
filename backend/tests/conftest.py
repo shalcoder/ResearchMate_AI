@@ -6,6 +6,7 @@ from sqlalchemy.pool import StaticPool
 from app.core.database import Base, get_db
 from app.core.security import create_access_token, get_password_hash
 from app.models.user import User, UserRole
+from app.models.paper import ResearchPaper, PaperChunk, PaperSummary
 from main import app
 
 # In-memory SQLite for high-speed isolated tests
