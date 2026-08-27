@@ -14,6 +14,7 @@ from app.schemas.paper import PaperOut, PaperChunkOut, PaperSummaryOut, PaperUpl
 from app.services.pdf_extractor import extract_pdf_data
 from app.services.text_chunker import chunk_extracted_pages
 from app.services.vector_store import vector_store_service
+from app.services.summary_service import summary_service
 
 router = APIRouter(prefix="/papers", tags=["Research Papers"])
 
@@ -171,3 +172,63 @@ def delete_paper(
     db.delete(paper)
     db.commit()
     return None
+
+
+@router.post("/{paper_id}/summary", response_model=PaperSummaryOut, status_code=status.HTTP_200_OK)
+def generate_paper_summary(
+    paper_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    paper = db.query(ResearchPaper).filter(ResearchPaper.id == paper_id).first()
+    if not paper:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paper not found.")
+
+    chunks = db.query(PaperChunk).filter(PaperChunk.paper_id == paper_id).order_by(PaperChunk.chunk_index.asc()).limit(8).all()
+    chunk_texts = [c.content for c in chunks]
+
+    summary_data = summary_service.generate_summary(
+        title=paper.title,
+        abstract=paper.abstract,
+        chunks=chunk_texts,
+    )
+
+    # Check if summary already exists
+    existing_summary = db.query(PaperSummary).filter(PaperSummary.paper_id == paper_id).first()
+    if existing_summary:
+        existing_summary.executive_summary = summary_data["executive_summary"]
+        existing_summary.key_findings = summary_data["key_findings"]
+        existing_summary.methodology = summary_data["methodology"]
+        existing_summary.limitations = summary_data["limitations"]
+        existing_summary.future_scope = summary_data["future_scope"]
+        summary_record = existing_summary
+    else:
+        summary_record = PaperSummary(
+            paper_id=paper.id,
+            executive_summary=summary_data["executive_summary"],
+            key_findings=summary_data["key_findings"],
+            methodology=summary_data["methodology"],
+            limitations=summary_data["limitations"],
+            future_scope=summary_data["future_scope"],
+        )
+        db.add(summary_record)
+
+    db.commit()
+    db.refresh(summary_record)
+    return summary_record
+
+
+@router.get("/{paper_id}/summary", response_model=PaperSummaryOut)
+def get_paper_summary(
+    paper_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    summary = db.query(PaperSummary).filter(PaperSummary.paper_id == paper_id).first()
+    if not summary:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Summary has not been generated for this paper yet.",
+        )
+    return summary
+

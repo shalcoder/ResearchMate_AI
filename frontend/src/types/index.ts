@@ -36,3 +36,45 @@ export interface RecentActivityItem {
   userRole?: UserRole;
   metadata?: string;
 }
+
+export interface PaperSummary {
+  id: string;
+  paper_id: string;
+  executive_summary: string;
+  key_findings: string[];
+  methodology?: string;
+  limitations: string[];
+  future_scope: string[];
+  created_at: string;
+}
+
+export interface PaperChunk {
+  id: string;
+  paper_id: string;
+  chunk_index: number;
+  section_name: string;
+  content: string;
+  token_count: number;
+  page_number: number;
+  chroma_id?: string;
+  created_at: string;
+}
+
+export interface ResearchPaper {
+  id: string;
+  title: string;
+  abstract?: string;
+  authors: string[];
+  publication_year?: number;
+  venue?: string;
+  doi?: string;
+  file_path: string;
+  file_size: number;
+  total_pages: number;
+  total_chunks: number;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+  summary?: PaperSummary;
+}
+
