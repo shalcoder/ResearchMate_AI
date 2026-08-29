@@ -38,6 +38,14 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "postgres_password"
     POSTGRES_DB: str = "researchmate_db"
 
+    # Storage & AI
+    UPLOAD_DIR: str = "./uploads"
+    CHROMA_HOST: str = "localhost"
+    CHROMA_PORT: int = 8000
+    CHROMA_PERSIST_DIR: str = "./chroma_db"
+    GEMINI_API_KEY: str = "mock-gemini-api-key-for-dev"
+    DEFAULT_EMBEDDING_MODEL: str = "models/text-embedding-004"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
