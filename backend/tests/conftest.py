@@ -7,6 +7,8 @@ from app.core.database import Base, get_db
 from app.core.security import create_access_token, get_password_hash
 from app.models.user import User, UserRole
 from app.models.paper import ResearchPaper, PaperChunk, PaperSummary
+from app.models.chat import ChatSession, ChatMessage
+from app.models.comparison import PaperComparison
 from main import app
 
 # In-memory SQLite for high-speed isolated tests
