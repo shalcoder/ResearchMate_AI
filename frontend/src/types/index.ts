@@ -78,3 +78,49 @@ export interface ResearchPaper {
   summary?: PaperSummary;
 }
 
+export interface Citation {
+  citation_id: string;
+  chunk_index: number;
+  page_number: number;
+  section_name: string;
+  excerpt: string;
+  relevance_score?: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  session_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  citations?: Citation[];
+  created_at: string;
+}
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  paper_id?: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  messages?: ChatMessage[];
+}
+
+export interface ComparisonMatrixItem {
+  aspect: string;
+  paper_comparisons: Record<string, string>;
+  analysis?: string;
+  winner_or_edge?: string;
+}
+
+export interface PaperComparison {
+  id?: string;
+  paper_ids: string[];
+  paper_titles: string[];
+  synthesis: string;
+  matrix: ComparisonMatrixItem[];
+  research_gaps: string[];
+  created_at?: string;
+}
+
+
