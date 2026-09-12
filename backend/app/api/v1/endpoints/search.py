@@ -73,6 +73,10 @@ def search_repository(
         for p in kw_papers:
             if any(r.paper_id == p.id for r in results):
                 continue
+            if venue and p.venue and venue.lower() not in p.venue.lower():
+                continue
+            if year and p.publication_year and p.publication_year != year:
+                continue
             results.append(
                 SearchResultItem(
                     paper_id=p.id,
