@@ -123,4 +123,50 @@ export interface PaperComparison {
   created_at?: string;
 }
 
+export interface PaperNote {
+  id: string;
+  paper_id: string;
+  user_id: string;
+  page_number: number;
+  selected_text?: string;
+  note_text: string;
+  color: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Project {
+  id: string;
+  title: string;
+  description?: string;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+  papers: ResearchPaper[];
+}
+
+export interface SearchResultItem {
+  paper_id: string;
+  paper_title: string;
+  venue?: string;
+  publication_year?: number;
+  chunk_index: number;
+  page_number: number;
+  section_name: string;
+  content_snippet: string;
+  relevance_score: number;
+}
+
+export interface CitationAllFormats {
+  paper_id: string;
+  paper_title: string;
+  apa: string;
+  mla: string;
+  ieee: string;
+  harvard: string;
+  chicago: string;
+  bibtex: string;
+}
+
+
 

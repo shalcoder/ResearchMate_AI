@@ -9,6 +9,9 @@ from app.models.user import User, UserRole
 from app.models.paper import ResearchPaper, PaperChunk, PaperSummary
 from app.models.chat import ChatSession, ChatMessage
 from app.models.comparison import PaperComparison
+from app.models.project import Project, ProjectPaper
+from app.models.note import PaperNote
+from app.models.citation import CitationExport
 from main import app
 
 # In-memory SQLite for high-speed isolated tests
