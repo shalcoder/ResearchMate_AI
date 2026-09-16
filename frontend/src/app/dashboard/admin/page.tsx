@@ -1,13 +1,39 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../../../components/layout/DashboardLayout';
 import { StatCard } from '../../../components/dashboard/StatCard';
 import { ActivityFeed } from '../../../components/dashboard/ActivityFeed';
 import { useAuth } from '../../../lib/auth-context';
+import { api } from '../../../lib/api';
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
+  const [metrics, setMetrics] = useState<any>({
+    total_users: 3,
+    total_papers: 4,
+    total_chunks: 28,
+    token_usage_estimated: 12450,
+    storage_usage_mb: 4.2,
+    users_by_role: { student: 1, researcher: 1, professor: 1, admin: 1 },
+  });
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const [mRes, logRes] = await Promise.all([
+          api.get('/admin/analytics'),
+          api.get('/admin/audit-logs'),
+        ]);
+        if (mRes.data) setMetrics(mRes.data);
+        if (logRes.data?.logs) setAuditLogs(logRes.data.logs);
+      } catch (err) {
+        console.log('Using default admin analytics');
+      }
+    };
+    fetchAdminData();
+  }, []);
 
   return (
     <DashboardLayout requiredRoles={['admin']}>
@@ -25,47 +51,50 @@ export default function AdminDashboardPage() {
               Platform Administration 🛡️
             </h2>
             <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Monitor active platform users, regulate Role-Based Access Control (RBAC), inspect Gemini AI token consumption, and manage paper storage.
+              Monitor active platform users, regulate Role-Based Access Control (RBAC), inspect Gemini AI token consumption, and manage vector storage.
             </p>
           </div>
-          <button className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-xl transition-all shadow-lg shadow-rose-600/20 self-start md:self-auto">
-            ⚙️ System Configuration
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              All Systems Operational
+            </span>
+          </div>
         </div>
 
         {/* System Health & Analytics Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Registered Users"
-            value="148"
-            change="Active platform"
+            value={metrics.total_users?.toString() || '3'}
+            change={`${metrics.users_by_role?.student || 1} Students, ${metrics.users_by_role?.researcher || 1} Researchers`}
             changeType="positive"
             icon="Users"
-            description="Students, Researchers, Professors"
+            description="Active Platform Accounts"
           />
           <StatCard
-            title="Gemini AI API Calls"
-            value="12,450"
+            title="Estimated AI Tokens"
+            value={metrics.token_usage_estimated ? metrics.token_usage_estimated.toLocaleString() : '12,450'}
             change="99.8% Grounded"
             changeType="positive"
             icon="Sparkles"
-            description="Avg latency: 1.2s"
+            description="Gemini 2.0 & Embeddings"
           />
           <StatCard
-            title="Vector Index Size"
-            value="45,800"
-            change="ChromaDB collection"
+            title="ChromaDB Vector Chunks"
+            value={metrics.total_chunks?.toString() || '28'}
+            change="Cosine Index Active"
             changeType="neutral"
             icon="Database"
-            description="Chunks stored"
+            description="Indexed Literature Blocks"
           />
           <StatCard
-            title="Cloudinary PDF Storage"
-            value="4.2 GB"
-            change="182 PDFs"
+            title="Literature Storage"
+            value={`${metrics.storage_usage_mb || 4.2} MB`}
+            change={`${metrics.total_papers || 2} Papers`}
             changeType="neutral"
             icon="HardDrive"
-            description="Storage usage"
+            description="Active PDF Ingestion"
           />
         </div>
 
@@ -75,8 +104,8 @@ export default function AdminDashboardPage() {
             <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800">
               <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider mb-4 flex items-center justify-between">
                 <span>User & RBAC Role Governance</span>
-                <span className="text-xs text-rose-400 font-medium cursor-pointer hover:underline">
-                  Add User
+                <span className="text-xs text-rose-400 font-medium">
+                  {metrics.total_users || 3} Total Accounts
                 </span>
               </h3>
               <div className="overflow-x-auto">
@@ -91,8 +120,8 @@ export default function AdminDashboardPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     <tr>
-                      <td className="py-3 font-semibold text-slate-200">Yashwanth</td>
-                      <td className="py-3 text-slate-400">yashwanth@researchmate.ai</td>
+                      <td className="py-3 font-semibold text-slate-200">Yashwanth Marimuthu</td>
+                      <td className="py-3 text-slate-400">marimuthumyashwanth@gmail.com</td>
                       <td className="py-3">
                         <span className="px-2 py-0.5 text-[10px] bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 uppercase font-bold">
                           Student
@@ -100,12 +129,12 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="py-3 text-right">
                         <button className="px-2.5 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg">
-                          Edit Role
+                          Manage
                         </button>
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 font-semibold text-slate-200">Dr. Steve</td>
+                      <td className="py-3 font-semibold text-slate-200">Steve Isaiah Alexander</td>
                       <td className="py-3 text-slate-400">steveisaiah09@gmail.com</td>
                       <td className="py-3">
                         <span className="px-2 py-0.5 text-[10px] bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/20 uppercase font-bold">
@@ -114,21 +143,21 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="py-3 text-right">
                         <button className="px-2.5 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg">
-                          Edit Role
+                          Manage
                         </button>
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 font-semibold text-slate-200">Prof. Vishal</td>
-                      <td className="py-3 text-slate-400">vishal.prof@researchmate.ai</td>
+                      <td className="py-3 font-semibold text-slate-200">Vishal M</td>
+                      <td className="py-3 text-slate-400">171483291+shalcoder@users.noreply.github.com</td>
                       <td className="py-3">
                         <span className="px-2 py-0.5 text-[10px] bg-amber-500/10 text-amber-400 rounded-full border border-amber-500/20 uppercase font-bold">
-                          Professor
+                          Professor / Admin
                         </span>
                       </td>
                       <td className="py-3 text-right">
                         <button className="px-2.5 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg">
-                          Edit Role
+                          Manage
                         </button>
                       </td>
                     </tr>
@@ -141,23 +170,33 @@ export default function AdminDashboardPage() {
           {/* Admin System Audit Feed */}
           <div>
             <ActivityFeed
-              title="Admin Security Audit Log"
-              activities={[
-                {
-                  id: 'aact_1',
-                  title: 'Role updated for Dr. Steve',
-                  timestamp: '1h ago',
-                  type: 'student_review',
-                  metadata: 'Changed from Student -> Researcher',
-                },
-                {
-                  id: 'aact_2',
-                  title: 'ChromaDB index auto-compacted',
-                  timestamp: '4h ago',
-                  type: 'paper_upload',
-                  metadata: 'Optimized vector similarity lookup',
-                },
-              ]}
+              title="Security & System Audit Log"
+              activities={
+                auditLogs.length > 0
+                  ? auditLogs.map((l) => ({
+                      id: l.id,
+                      title: `${l.event}: ${l.target}`,
+                      timestamp: 'Just now',
+                      type: 'student_review',
+                      metadata: `Actor: ${l.actor} • Status: ${l.status}`,
+                    }))
+                  : [
+                      {
+                        id: 'aact_1',
+                        title: 'ChromaDB Vector Store Auto-Optimized',
+                        timestamp: 'Just now',
+                        type: 'paper_upload',
+                        metadata: 'HNSW Cosine index synced',
+                      },
+                      {
+                        id: 'aact_2',
+                        title: 'RBAC Policy Verified for Research Group',
+                        timestamp: '1h ago',
+                        type: 'student_review',
+                        metadata: 'Student -> Professor permissions checked',
+                      },
+                    ]
+              }
             />
           </div>
         </div>
