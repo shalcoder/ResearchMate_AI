@@ -1,0 +1,42 @@
+name: "Feature / Task"
+description: "Propose a new feature, user story, or development task"
+title: "[TASK] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing to ResearchMate AI! Please fill out the task details below.
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Target Sprint / Epic
+      options:
+        - "Sprint 1: Authentication & RBAC"
+        - "Sprint 2: Paper Management & Vector Ingestion"
+        - "Sprint 3: Grounded RAG Chat & Paper Comparison"
+        - "Sprint 4: Semantic Search, Citations & Projects"
+        - "Sprint 5: DevOps, Docker & Admin Governance"
+        - "v1.1.0 Roadmap"
+    validations:
+      required: true
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User Story
+      description: As a [role], I want to [goal] so that [benefit].
+      placeholder: As a researcher, I want to upload multiple PDFs so that I can analyze cross-paper methodologies.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Technical Scope & Acceptance Criteria
+      description: List the technical deliverables and verification criteria.
+      placeholder: |
+        - [ ] Create database model
+        - [ ] Add FastAPI endpoint
+        - [ ] Implement responsive Next.js component
+        - [ ] Add automated pytest cases
+    validations:
+      required: true
