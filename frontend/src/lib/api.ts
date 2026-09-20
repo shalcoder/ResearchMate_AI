@@ -35,35 +35,107 @@ export interface AuthResponse {
   };
 }
 
+class ApiError extends Error {
+  response?: {
+    status: number;
+    data: any;
+  };
+  constructor(message: string, status?: number, data?: any) {
+    super(message);
+    this.name = 'ApiError';
+    if (status !== undefined) {
+      this.response = { status, data };
+    }
+  }
+}
+
+function getAuthToken(): string | null {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('researchmate_token');
+  }
+  return null;
+}
+
+async function request(method: string, endpoint: string, data?: any, options: { headers?: Record<string, string>; params?: Record<string, any> } = {}) {
+  let url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+
+  if (options.params) {
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(options.params)) {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, String(value));
+      }
+    }
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString;
+    }
+  }
+
+  const headers: Record<string, string> = { ...options.headers };
+  const token = getAuthToken();
+  if (token && !headers['Authorization']) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  let body: any = undefined;
+  if (data !== undefined) {
+    if (typeof FormData !== 'undefined' && data instanceof FormData) {
+      body = data;
+      // Let browser / fetch set multipart boundary
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+      body = JSON.stringify(data);
+    }
+  }
+
+  const response = await fetch(url, {
+    method,
+    headers,
+    body,
+  });
+
+  let responseData: any = null;
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    responseData = await response.json().catch(() => null);
+  } else {
+    responseData = await response.text().catch(() => '');
+  }
+
+  if (!response.ok) {
+    const msg = (responseData && responseData.detail) || `Request failed with status ${response.status}`;
+    throw new ApiError(msg, response.status, responseData);
+  }
+
+  return {
+    data: responseData,
+    status: response.status,
+    headers: response.headers,
+  };
+}
+
+export const api = {
+  get: (url: string, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
+    request('GET', url, undefined, options),
+  post: (url: string, data?: any, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
+    request('POST', url, data, options),
+  put: (url: string, data?: any, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
+    request('PUT', url, data, options),
+  delete: (url: string, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
+    request('DELETE', url, undefined, options),
+};
+
 export const apiClient = {
   async register(payload: RegisterPayload) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || 'Registration failed');
-    }
-
-    return response.json();
+    const res = await api.post('/auth/register', payload);
+    return res.data;
   },
 
   async login(payload: LoginPayload): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || 'Invalid email or password');
-    }
-
-    const data: AuthResponse = await response.json();
+    const res = await api.post('/auth/login', payload);
+    const data: AuthResponse = res.data;
     if (typeof window !== 'undefined') {
       localStorage.setItem('researchmate_token', data.access_token);
       localStorage.setItem('researchmate_user', JSON.stringify(data.user));
@@ -72,22 +144,8 @@ export const apiClient = {
   },
 
   async getMe(token?: string) {
-    const activeToken =
-      token || (typeof window !== 'undefined' ? localStorage.getItem('researchmate_token') : null);
-
-    if (!activeToken) throw new Error('No authentication token');
-
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${activeToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Session expired or invalid');
-    }
-
-    return response.json();
+    const res = await api.get('/auth/me', token ? { headers: { Authorization: `Bearer ${token}` } } : undefined);
+    return res.data;
   },
 
   async logout() {
@@ -95,6 +153,9 @@ export const apiClient = {
       localStorage.removeItem('researchmate_token');
       localStorage.removeItem('researchmate_user');
     }
+    try {
+      await api.post('/auth/logout');
+    } catch (_) {}
     return { success: true };
   },
 };

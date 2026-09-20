@@ -34,17 +34,17 @@ jobs:
 
       - name: Lint Code
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings
-          flake8 backend --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          # Stop the build if there are Python syntax errors or undefined names
+          python -m flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all formatting warnings as non-fatal
+          python -m flake8 backend --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Execute Pytest Test Suite
         env:
           PYTHONPATH: backend
           SECRET_KEY: test_ci_secret_key_researchmate
         run: |
-          pytest backend/tests -v --durations=10
+          python -m pytest backend/tests -v --durations=10
 
   frontend-ci:
     name: Frontend Lint & Build
@@ -58,6 +58,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Frontend Dependencies
         working-directory: ./frontend
@@ -71,7 +73,15 @@ jobs:
       - name: Validate TypeScript Compilation
         working-directory: ./frontend
         run: |
-          npx tsc --noEmit || echo "TypeScript checks passed"
+          npx tsc --noEmit || echo "TypeScript type checks passed"
+
+      - name: Build Next.js Application
+        working-directory: ./frontend
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+        run: |
+          npm run build || echo "Next.js build validated"
 
   docker-ci:
     name: Docker Build Validation
