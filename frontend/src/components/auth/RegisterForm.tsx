@@ -146,7 +146,7 @@ export const RegisterForm: React.FC = () => {
         </div>
         <h2 className="text-2xl font-bold text-slate-100 tracking-tight">Create Your Research Account</h2>
         <p className="text-xs text-slate-400 mt-1">
-          Join ResearchMate AI to store papers, generate summaries & grounded answers
+          Join ResearchMate AI to manage papers, generate summaries & grounded answers
         </p>
       </div>
 
