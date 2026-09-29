@@ -188,7 +188,7 @@ export default function ProjectsPage() {
                     disabled={!selectedPaperToPin}
                     className="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-lg transition-colors"
                   >
-                    Pin Paper to Workspace
+                    Add Paper to Workspace
                   </button>
                 </div>
 
