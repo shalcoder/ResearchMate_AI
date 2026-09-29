@@ -29,6 +29,7 @@ export default function SearchPage() {
       setResults(res.data.results || []);
     } catch (err) {
       console.error('Failed to search papers:', err);
+      setResults([]);
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +113,7 @@ export default function SearchPage() {
           <div className="space-y-4">
             {results.map((r, idx) => (
               <div
-                key={idx}
+                key={`${r.paper_id}-${r.chunk_index}-${r.page_number}`}
                 className="p-5 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-indigo-500/40 transition-all space-y-2.5"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
