@@ -165,6 +165,9 @@ Test breakdown:
 - [Viva Presentation & Defense Guide](docs/viva-presentation-guide.md)
 
 ---
+## Git Workflow
 
+This project follows a Git and GitHub workflow using commits,
+branches, pushes, pulls, merges, issues, and conflict resolution.
 ## 📄 License
 MIT License — Copyright (c) 2026 ResearchMate AI Team.
