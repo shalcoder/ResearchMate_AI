@@ -18,6 +18,8 @@ from app.services.summary_service import summary_service
 
 router = APIRouter(prefix="/papers", tags=["Research Papers"])
 
+MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20 MB
+
 
 @router.post("/upload", response_model=PaperUploadResponse, status_code=status.HTTP_201_CREATED)
 async def upload_paper(
@@ -29,7 +31,7 @@ async def upload_paper(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if not file.filename.lower().endswith((".pdf", ".txt")):
+    if not file.filename or not file.filename.lower().endswith((".pdf", ".txt")):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only PDF and text research files are supported.",
@@ -40,6 +42,12 @@ async def upload_paper(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Uploaded file is empty.",
+        )
+
+    if len(file_bytes) > MAX_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Uploaded file exceeds 20 MB limit.",
         )
 
     # Ensure upload directory exists
