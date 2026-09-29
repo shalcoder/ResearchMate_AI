@@ -54,6 +54,7 @@ export default function SearchPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="e.g. self-attention complexity in machine translation, vision transformers, convolutional architectures..."
               className="flex-1 px-4 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              aria-label="Search scientific papers"
             />
             <button
               type="submit"
