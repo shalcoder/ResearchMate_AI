@@ -3,7 +3,7 @@
 > **Production-Grade Persistent Academic Research Workspace & Literature-Review Platform**
 
 ResearchMate AI is a specialized academic research workspace designed for persistent scientific paper management, source-grounded question answering (RAG), side-by-side paper comparison, automated research-gap identification, multi-style academic citations (APA, MLA, IEEE, Harvard, Chicago, BibTeX), notes & highlights, collaborative project dossiers, professor supervision, and administrative governance.
-
+This platform reduces literature-review overhead by combining semantic search, grounded evidence retrieval, and collaborative research workflows into a single academic workspace.
 ---
 
 ## 👥 Core Engineering Team
