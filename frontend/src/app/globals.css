@@ -1,23 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 248, 250, 252;
-  --background-start-rgb: 2, 6, 23;
-  --background-end-rgb: 15, 23, 42;
+  --background: #08080a;
+  --surface: #0f0f14;
+  --surface-raised: #14141c;
+  --surface-elevated: #1a1a24;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --foreground: #f4f4f6;
+  --foreground-muted: #8b8b99;
+  --accent-cyan: #38bdf8;
+  --accent-violet: #818cf8;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle Spatial Background Mesh */
+.spatial-mesh-bg {
+  background-color: #08080a;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+    radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 40%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
+}
+
+/* World Labs Glass Card */
+.worldlabs-card {
+  background: rgba(16, 16, 22, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+    0 20px 40px -15px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.worldlabs-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    0 25px 50px -12px rgba(99, 102, 241, 0.15);
+}
+
+/* World Labs Pill Badge */
+.worldlabs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #d1d5db;
+  backdrop-filter: blur(8px);
+}
+
+/* World Labs Primary CTA Button */
+.worldlabs-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #08080a;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.worldlabs-btn-primary:hover {
+  background: #e4e4e7;
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.35);
+}
+
+.worldlabs-btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* World Labs Ghost / Secondary Button */
+.worldlabs-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.worldlabs-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.worldlabs-btn-secondary:active {
+  transform: scale(0.97);
 }
 
 /* Custom Scrollbar */
@@ -27,14 +135,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #08080a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.4);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+  background: rgba(255, 255, 255, 0.3);
 }

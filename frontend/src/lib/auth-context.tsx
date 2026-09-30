@@ -2,75 +2,119 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole } from '../types';
+import { apiClient, LoginPayload, RegisterPayload } from './api';
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  switchRole: (role: UserRole) => void;
+  login: (credentials: LoginPayload) => Promise<User>;
+  register: (payload: RegisterPayload) => Promise<User>;
+  quickLogin: (role: UserRole) => Promise<User>;
+  switchRole: (role: UserRole) => Promise<void>;
   hasRole: (allowedRoles: UserRole[]) => boolean;
   logout: () => void;
 }
 
-const MOCK_USERS: Record<UserRole, User> = {
-  student: {
-    id: 'usr_student_01',
-    name: 'Yashwanth (Student)',
-    email: 'yashwanth@researchmate.ai',
-    role: 'student',
-    department: 'Computer Science & Engineering',
-    institution: 'Research University',
-    createdAt: '2026-01-15',
-  },
-  researcher: {
-    id: 'usr_researcher_01',
-    name: 'Dr. Steve (AI Researcher)',
-    email: 'steveisaiah09@gmail.com',
-    role: 'researcher',
-    department: 'AI & Data Science Institute',
-    institution: 'Research University',
-    createdAt: '2025-11-01',
-  },
-  professor: {
-    id: 'usr_professor_01',
-    name: 'Prof. Vishal (Faculty Advisor)',
-    email: 'vishal.prof@researchmate.ai',
-    role: 'professor',
-    department: 'School of Advanced Computing',
-    institution: 'Research University',
-    createdAt: '2025-08-10',
-  },
-  admin: {
-    id: 'usr_admin_01',
-    name: 'System Admin',
-    email: 'admin@researchmate.ai',
-    role: 'admin',
-    department: 'Platform Operations',
-    institution: 'ResearchMate Core',
-    createdAt: '2025-05-01',
-  },
+const DEMO_CREDENTIALS: Record<UserRole, LoginPayload> = {
+  researcher: { email: 'researcher@researchmate.ai', password: 'SecurePass123!' },
+  student: { email: 'student@researchmate.ai', password: 'SecurePass123!' },
+  professor: { email: 'professor@researchmate.ai', password: 'SecurePass123!' },
+  admin: { email: 'admin@researchmate.ai', password: 'SecurePass123!' },
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(MOCK_USERS.researcher);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Helper to format backend user to frontend User type
+  const formatUser = (rawUser: any): User => ({
+    id: rawUser.id,
+    name: rawUser.name,
+    email: rawUser.email,
+    role: (rawUser.role?.toLowerCase() as UserRole) || 'student',
+    department: rawUser.department || undefined,
+    institution: rawUser.institution || undefined,
+    createdAt: rawUser.created_at || new Date().toISOString(),
+  });
+
+  // Restore authenticated session from localStorage on startup
   useEffect(() => {
-    // Simulate auth token check on initial mount
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
+    const initAuth = async () => {
+      try {
+        const savedToken = typeof window !== 'undefined' ? localStorage.getItem('researchmate_token') : null;
+        const savedUserStr = typeof window !== 'undefined' ? localStorage.getItem('researchmate_user') : null;
+
+        if (savedToken) {
+          setToken(savedToken);
+          if (savedUserStr) {
+            try {
+              setUser(formatUser(JSON.parse(savedUserStr)));
+            } catch (_) {}
+          }
+          // Validate token with backend /auth/me
+          try {
+            const me = await apiClient.getMe(savedToken);
+            if (me) {
+              const formatted = formatUser(me);
+              setUser(formatted);
+              localStorage.setItem('researchmate_user', JSON.stringify(formatted));
+            }
+          } catch (err) {
+            // Token expired or invalid
+            localStorage.removeItem('researchmate_token');
+            localStorage.removeItem('researchmate_user');
+            setUser(null);
+            setToken(null);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
   }, []);
 
-  const switchRole = (newRole: UserRole) => {
+  const login = async (credentials: LoginPayload): Promise<User> => {
     setIsLoading(true);
-    setTimeout(() => {
-      setUser(MOCK_USERS[newRole]);
+    try {
+      const authRes = await apiClient.login(credentials);
+      const formatted = formatUser(authRes.user);
+      setToken(authRes.access_token);
+      setUser(formatted);
+      return formatted;
+    } finally {
       setIsLoading(false);
-    }, 250);
+    }
+  };
+
+  const register = async (payload: RegisterPayload): Promise<User> => {
+    setIsLoading(true);
+    try {
+      await apiClient.register(payload);
+      // Auto login immediately after registration
+      const authRes = await apiClient.login({ email: payload.email, password: payload.password });
+      const formatted = formatUser(authRes.user);
+      setToken(authRes.access_token);
+      setUser(formatted);
+      return formatted;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const quickLogin = async (role: UserRole): Promise<User> => {
+    const creds = DEMO_CREDENTIALS[role];
+    return await login(creds);
+  };
+
+  const switchRole = async (newRole: UserRole): Promise<void> => {
+    await quickLogin(newRole);
   };
 
   const hasRole = (allowedRoles: UserRole[]): boolean => {
@@ -79,6 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    apiClient.logout();
+    setToken(null);
     setUser(null);
   };
 
@@ -86,8 +132,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
+        token,
         isLoading,
         isAuthenticated: !!user,
+        login,
+        register,
+        quickLogin,
         switchRole,
         hasRole,
         logout,

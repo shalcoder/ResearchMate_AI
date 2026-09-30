@@ -5,318 +5,269 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { UserRole } from '../../types';
 import { useAuth } from '../../lib/auth-context';
+import { ArrowRight, Sparkles, GraduationCap, Microscope, BookOpen, Shield } from 'lucide-react';
 
 interface FieldErrors {
   name?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
-  role?: string;
   general?: string;
 }
 
-const ROLE_OPTIONS: { role: UserRole; title: string; desc: string; icon: string }[] = [
-  {
-    role: 'student',
-    title: 'Student',
-    desc: 'Literature reviews, coursework paper QA, notes & summaries',
-    icon: '🎓',
-  },
+const ROLES: { role: UserRole; title: string; desc: string; icon: React.ReactNode }[] = [
   {
     role: 'researcher',
     title: 'Researcher',
-    desc: 'Semantic search, paper matrix comparison & gap analysis',
-    icon: '🔬',
+    desc: 'Semantic RAG, deep cross-paper synthesis & gap analysis',
+    icon: <Microscope className="w-4 h-4 text-cyan-400" />,
+  },
+  {
+    role: 'student',
+    title: 'Student',
+    desc: 'Coursework literature reviews, cited QA & study summaries',
+    icon: <GraduationCap className="w-4 h-4 text-emerald-400" />,
   },
   {
     role: 'professor',
-    title: 'Professor / Faculty',
-    desc: 'Supervise student reviews, curate collections & feedback',
-    icon: '📚',
-  },
-  {
-    role: 'admin',
-    title: 'Administrator',
-    desc: 'System health, governance, user management & AI analytics',
-    icon: '🛡️',
+    title: 'Professor',
+    desc: 'Student feedback, curated collections & advisor oversight',
+    icon: <BookOpen className="w-4 h-4 text-amber-400" />,
   },
 ];
 
 export const RegisterForm: React.FC = () => {
   const router = useRouter();
-  const { switchRole } = useAuth();
+  const { register } = useAuth();
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student' as UserRole,
-    department: '',
+    role: 'researcher' as UserRole,
+    department: 'Computer Science',
+    institution: 'Research University',
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // Client-side Validation Logic
-  const validateField = (fieldName: string, value: string): string => {
-    switch (fieldName) {
-      case 'name':
-        if (!value.trim()) return 'Full name is required';
-        if (value.trim().length < 2) return 'Name must be at least 2 characters';
-        return '';
-      case 'email':
-        if (!value.trim()) return 'Email address is required';
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) return 'Please enter a valid email address';
-        return '';
-      case 'password':
-        if (!value) return 'Password is required';
-        if (value.length < 8) return 'Password must be at least 8 characters';
-        if (!/(?=.*[A-Za-z])(?=.*\d)/.test(value))
-          return 'Password must contain at least one letter and one number';
-        return '';
-      case 'confirmPassword':
-        if (!value) return 'Please confirm your password';
-        if (value !== formData.password) return 'Passwords do not match';
-        return '';
-      default:
-        return '';
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Real-time error clearing/validation
-    if (errors[name as keyof FieldErrors]) {
-      const errorMsg = validateField(name, value);
-      setErrors((prev) => ({ ...prev, [name]: errorMsg }));
-    }
-  };
-
-  const handleRoleSelect = (role: UserRole) => {
-    setFormData((prev) => ({ ...prev, role }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate all fields
-    const nameError = validateField('name', formData.name);
-    const emailError = validateField('email', formData.email);
-    const passwordError = validateField('password', formData.password);
-    const confirmPasswordError = validateField('confirmPassword', formData.confirmPassword);
+    const newErrors: FieldErrors = {};
+    if (!formData.name.trim()) newErrors.name = 'Full name is required';
+    if (!formData.email.trim() || !formData.email.includes('@')) newErrors.email = 'Valid academic email required';
+    if (!formData.password || formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
 
-    const newErrors: FieldErrors = {
-      name: nameError,
-      email: emailError,
-      password: passwordError,
-      confirmPassword: confirmPasswordError,
-    };
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
-    setErrors(newErrors);
-
-    const hasError = Object.values(newErrors).some((err) => !!err);
-    if (hasError) return;
-
+    setErrors({});
     setIsSubmitting(true);
 
-    // Simulate API registration request
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      switchRole(formData.role);
+    try {
+      const user = await register({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        role: formData.role,
+        department: formData.department,
+        institution: formData.institution,
+      });
 
-      setTimeout(() => {
-        router.push(`/dashboard/${formData.role}`);
-      }, 1200);
-    }, 800);
+      router.push(`/dashboard/${user.role}`);
+    } catch (err: any) {
+      setErrors({
+        general: err?.response?.data?.detail || err?.message || 'Registration failed. Please check information.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto p-8 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-xl">
-      {/* Form Header */}
-      <div className="text-center mb-8">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-400 mx-auto flex items-center justify-center text-white font-bold text-xl mb-3 shadow-lg shadow-indigo-500/25">
-          R
-        </div>
-        <h2 className="text-2xl font-bold text-slate-100 tracking-tight">Create Research Account</h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Join ResearchMate AI to store papers, generate summaries & grounded answers
-        </p>
-      </div>
+    <div className="w-full max-w-lg mx-auto">
+      <div className="worldlabs-card rounded-3xl p-8 sm:p-10 relative overflow-hidden">
+        {/* Subtle ambient light */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-56 h-56 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
 
-      {submitSuccess && (
-        <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-3 animate-pulse">
-          <span className="text-lg">✅</span>
-          <span>Registration successful! Directing to your {formData.role} workspace...</span>
-        </div>
-      )}
-
-      {errors.general && (
-        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold">
-          ⚠️ {errors.general}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Full Name */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name *</label>
-          <input
-            type="text"
-            name="name"
-            placeholder="e.g., Yashwanth Marimuthu"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
-              errors.name
-                ? 'border-rose-500/80 focus:border-rose-400'
-                : 'border-slate-800 focus:border-indigo-500'
-            }`}
-          />
-          {errors.name && <p className="text-[11px] text-rose-400 mt-1 font-medium">{errors.name}</p>}
-        </div>
-
-        {/* Email Address */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Academic Email *</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="e.g., yashwanth@researchmate.ai"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
-              errors.email
-                ? 'border-rose-500/80 focus:border-rose-400'
-                : 'border-slate-800 focus:border-indigo-500'
-            }`}
-          />
-          {errors.email && <p className="text-[11px] text-rose-400 mt-1 font-medium">{errors.email}</p>}
-        </div>
-
-        {/* Password & Confirm Password Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Password *</label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                placeholder="Min 8 characters"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
-                  errors.password
-                    ? 'border-rose-500/80 focus:border-rose-400'
-                    : 'border-slate-800 focus:border-indigo-500'
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-[11px] text-slate-400 hover:text-slate-200"
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-[11px] text-rose-400 mt-1 font-medium leading-tight">{errors.password}</p>
-            )}
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center mb-8 relative z-10">
+          <div className="worldlabs-pill mb-4 border-indigo-500/20 bg-indigo-500/10 text-indigo-300">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <span>New Academic Profile</span>
           </div>
 
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+            Create Account
+          </h1>
+          <p className="text-xs text-zinc-400 max-w-sm">
+            Join ResearchMate AI to index literature, run grounded RAG analysis, and collaborate with your lab.
+          </p>
+        </div>
+
+        {/* General Error Alert */}
+        {errors.general && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-2.5">
+            <span className="text-sm">⚠️</span>
+            <div className="leading-relaxed">{errors.general}</div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+          {/* Full Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Confirm Password *</label>
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+              Full Name
+            </label>
             <input
-              type={showPassword ? 'text' : 'password'}
-              name="confirmPassword"
-              placeholder="Re-enter password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
-                errors.confirmPassword
-                  ? 'border-rose-500/80 focus:border-rose-400'
-                  : 'border-slate-800 focus:border-indigo-500'
-              }`}
+              type="text"
+              placeholder="Dr. Fei-Fei Li"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
             />
-            {errors.confirmPassword && (
-              <p className="text-[11px] text-rose-400 mt-1 font-medium">{errors.confirmPassword}</p>
-            )}
+            {errors.name && <p className="text-[11px] text-rose-400 mt-1">{errors.name}</p>}
           </div>
-        </div>
 
-        {/* Role Selection Grid */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-2">Select Your Primary Role *</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {ROLE_OPTIONS.map((item) => {
-              const isSelected = formData.role === item.role;
-              return (
-                <div
-                  key={item.role}
-                  onClick={() => handleRoleSelect(item.role)}
-                  className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-indigo-600/15 border-indigo-500 text-slate-100 shadow-md shadow-indigo-600/10'
-                      : 'bg-slate-950/60 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-300'
+          {/* Academic Email */}
+          <div>
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+              Academic Email
+            </label>
+            <input
+              type="email"
+              placeholder="feifei@stanford.edu"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+            />
+            {errors.email && <p className="text-[11px] text-rose-400 mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Academic Role Selection */}
+          <div>
+            <label className="block text-xs font-medium text-zinc-300 mb-2">
+              Primary Academic Role
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {ROLES.map((r) => (
+                <button
+                  key={r.role}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: r.role })}
+                  className={`p-3 rounded-2xl text-left border transition-all ${
+                    formData.role === r.role
+                      ? 'bg-white/[0.08] border-indigo-400/50 shadow-md shadow-indigo-500/10'
+                      : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-base">{item.icon}</span>
-                    <span className="text-xs font-bold">{item.title}</span>
+                  <div className="flex items-center gap-1.5 mb-1 text-xs font-semibold text-white">
+                    {r.icon}
+                    <span>{r.title}</span>
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-tight">{item.desc}</p>
-                </div>
-              );
-            })}
+                  <p className="text-[10px] text-zinc-400 line-clamp-2 leading-tight">
+                    {r.desc}
+                  </p>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Department / Institution (Optional) */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-            Department / Institution <span className="text-slate-500 font-normal">(Optional)</span>
-          </label>
-          <input
-            type="text"
-            name="department"
-            placeholder="e.g., Computer Science & Engineering"
-            value={formData.department}
-            onChange={handleChange}
-            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-          />
-        </div>
+          {/* Passwords */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="At least 8 chars"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+              />
+              {errors.password && <p className="text-[10px] text-rose-400 mt-1">{errors.password}</p>}
+            </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting || submitSuccess}
-          className="w-full py-3 px-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:bg-slate-800 disabled:text-slate-500 rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2"
-        >
-          {isSubmitting ? (
-            <>
-              <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-              <span>Creating Account...</span>
-            </>
-          ) : (
-            'Complete Registration'
-          )}
-        </button>
-      </form>
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                placeholder="Repeat password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+              />
+              {errors.confirmPassword && (
+                <p className="text-[10px] text-rose-400 mt-1">{errors.confirmPassword}</p>
+              )}
+            </div>
+          </div>
 
-      {/* Switch to Login Link */}
-      <div className="text-center mt-6 pt-4 border-t border-slate-800/80">
-        <p className="text-xs text-slate-400">
-          Already have an account?{' '}
-          <Link href="/login" className="text-indigo-400 font-semibold hover:underline">
-            Sign In Here
+          {/* Department & Institution */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Department
+              </label>
+              <input
+                type="text"
+                placeholder="Computer Science"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-2xl bg-[#09090d] border border-white/[0.08] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Institution
+              </label>
+              <input
+                type="text"
+                placeholder="Research University"
+                value={formData.institution}
+                onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-2xl bg-[#09090d] border border-white/[0.08] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full worldlabs-btn-primary mt-4 disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                Registering Account...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2 font-semibold">
+                Create Account & Access Platform
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            )}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center text-xs text-zinc-400 relative z-10">
+          Already registered?{' '}
+          <Link
+            href="/login"
+            className="text-white hover:text-indigo-300 font-semibold underline underline-offset-4 transition-colors"
+          >
+            Sign In here
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

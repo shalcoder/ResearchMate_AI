@@ -5,6 +5,28 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
 import { NAVIGATION_ITEMS } from '../../lib/constants';
+import {
+  LayoutDashboard,
+  BookOpen,
+  MessageSquareText,
+  Columns,
+  Search,
+  FolderKanban,
+  GraduationCap,
+  ShieldCheck,
+  Sparkles
+} from 'lucide-react';
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  LayoutDashboard: <LayoutDashboard className="w-4 h-4" />,
+  BookOpen: <BookOpen className="w-4 h-4" />,
+  MessageSquareText: <MessageSquareText className="w-4 h-4" />,
+  Columns: <Columns className="w-4 h-4" />,
+  Search: <Search className="w-4 h-4" />,
+  FolderKanban: <FolderKanban className="w-4 h-4" />,
+  GraduationCap: <GraduationCap className="w-4 h-4" />,
+  ShieldCheck: <ShieldCheck className="w-4 h-4" />,
+};
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
@@ -13,25 +35,26 @@ export const Sidebar: React.FC = () => {
   const visibleNavItems = NAVIGATION_ITEMS.filter((item) => hasRole(item.roles));
 
   return (
-    <aside className="w-64 bg-slate-900/90 border-r border-slate-800 flex flex-col justify-between p-4 min-h-[calc(100vh-4rem)]">
+    <aside className="w-64 bg-[#08080a] border-r border-white/[0.08] flex flex-col justify-between p-4 min-h-[calc(100vh-4rem)]">
       <div>
-        {/* Active Role Context Banner */}
-        <div className="mb-6 p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Active Workspace Role
+        {/* Active Role Card */}
+        <div className="mb-6 p-3.5 rounded-2xl bg-[#0f0f14] border border-white/[0.08] shadow-sm">
+          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500 block mb-1">
+            Current Workspace
           </span>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-indigo-400 capitalize">
-              {user?.role || 'Guest'}
+            <span className="text-xs font-bold text-white capitalize flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              {user?.role ? `${user.role} Mode` : 'Guest'}
             </span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
         </div>
 
         {/* Dynamic Navigation Menu */}
         <div className="space-y-1">
-          <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            Navigation Menu
+          <p className="px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500 mb-2">
+            Navigation
           </p>
           {visibleNavItems.map((item) => {
             const isActive = pathname === item.href;
@@ -41,16 +64,22 @@ export const Sidebar: React.FC = () => {
                 href={item.href}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-white text-black font-bold shadow-md shadow-white/10'
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/50" />
+                <div className="flex items-center gap-2.5">
+                  {ICON_MAP[item.icon] || <span className="w-1.5 h-1.5 rounded-full bg-white/40" />}
                   <span>{item.title}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-2 py-0.5 text-[9px] font-bold bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30">
+                  <span
+                    className={`px-2 py-0.5 text-[9px] font-bold rounded-full border ${
+                      isActive
+                        ? 'bg-black/10 border-black/20 text-black'
+                        : 'bg-white/[0.08] border-white/[0.12] text-zinc-300'
+                    }`}
+                  >
                     {item.badge}
                   </span>
                 )}
@@ -60,10 +89,10 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* Role Notice & Security Footer */}
-      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-center">
-        <p className="text-[11px] text-slate-400 font-medium">RBAC Security Active</p>
-        <p className="text-[10px] text-slate-400 mt-0.5">Role-filtered navigation enabled</p>
+      {/* Security & Provenance Badge */}
+      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-white/[0.06] text-center">
+        <p className="text-[11px] text-zinc-300 font-semibold">Grounded Evidence Engine</p>
+        <p className="text-[10px] text-zinc-500 mt-0.5 font-mono">ChromaDB • Provenance v1.0</p>
       </div>
     </aside>
   );

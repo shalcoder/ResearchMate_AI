@@ -22,11 +22,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const isRoleAllowed = !requiredRoles || hasRole(requiredRoles);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased flex flex-col">
+    <div className="min-h-screen spatial-mesh-bg text-white font-sans antialiased flex flex-col selection:bg-white selection:text-black">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 lg:p-8 bg-slate-950/90 overflow-y-auto">
+        <main className="flex-1 p-6 lg:p-8 bg-[#09090d]/80 backdrop-blur-sm overflow-y-auto">
           {isLoading ? (
             <LoadingState />
           ) : !isRoleAllowed ? (
