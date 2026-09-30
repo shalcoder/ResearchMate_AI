@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # Security & JWT
     SECRET_KEY: str = "super_secret_jwt_dev_key_for_researchmate_ai_2026_auth"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1  # 1 day — security hardening: short-lived tokens per OWASP
 
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = [
@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     CHROMA_PORT: int = 8000
     CHROMA_PERSIST_DIR: str = "./chroma_db"
     GEMINI_API_KEY: str = "mock-gemini-api-key-for-dev"
-    DEFAULT_EMBEDDING_MODEL: str = "models/text-embedding-004"
+    DEFAULT_EMBEDDING_MODEL: str = "models/embedding-gecko-001"  # cost-optimised: lower compute for prod infra
 
     model_config = SettingsConfigDict(
         env_file=".env",
