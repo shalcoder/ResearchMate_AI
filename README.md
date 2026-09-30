@@ -105,6 +105,8 @@ docker compose ps
 - **ChromaDB Vector Store**: `http://localhost:8001`
 - **PostgreSQL Database**: `localhost:5432`
 
+Stop the services with `docker compose down`.
+
 ---
 
 ### Option B: Local Development Setup
