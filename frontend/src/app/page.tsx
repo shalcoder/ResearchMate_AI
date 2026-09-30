@@ -18,16 +18,56 @@ import {
   ExternalLink,
   LogOut,
   ChevronRight,
-  Cpu
+  Cpu,
+  FileUp,
+  Brain,
+  MessageSquare,
+  GitCompare,
+  FolderCheck,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
   const { user, isAuthenticated, quickLogin, logout } = useAuth();
+  const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
   const [liveQuery, setLiveQuery] = useState('');
   const [isQuerying, setIsQuerying] = useState(false);
   const [queryResult, setQueryResult] = useState<any>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const WORKFLOW_STEPS = [
+    {
+      step: '01',
+      title: 'Upload Papers',
+      desc: 'Drag & drop PDFs or import DOIs. Automatic metadata extraction and section parsing.',
+      icon: <FileUp className="w-5 h-5 text-cyan-400" />,
+    },
+    {
+      step: '02',
+      title: 'AI Processing',
+      desc: 'Section-aware chunking, dense vector embeddings, and key finding synthesis.',
+      icon: <Brain className="w-5 h-5 text-indigo-400" />,
+    },
+    {
+      step: '03',
+      title: 'Ask Questions',
+      desc: 'Grounded RAG chat that quotes exact source pages and paragraphs with 0 hallucinations.',
+      icon: <MessageSquare className="w-5 h-5 text-emerald-400" />,
+    },
+    {
+      step: '04',
+      title: 'Compare & Discover',
+      desc: 'Side-by-side matrices comparing methodologies, datasets, benchmarks, and research gaps.',
+      icon: <GitCompare className="w-5 h-5 text-amber-400" />,
+    },
+    {
+      step: '05',
+      title: 'Organize Research',
+      desc: 'Save findings into persistent project labs, export verified citations, and collaborate.',
+      icon: <FolderCheck className="w-5 h-5 text-purple-400" />,
+    },
+  ];
 
   // 1. Interactive Neural Particles Canvas Animation
   useEffect(() => {
@@ -77,7 +117,6 @@ export default function Home() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw connection lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -96,7 +135,6 @@ export default function Home() {
         }
       }
 
-      // Draw particles & update positions
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -132,7 +170,6 @@ export default function Home() {
     };
   }, []);
 
-  // 2. Mouse spotlight tracking on cards
   const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -168,7 +205,7 @@ export default function Home() {
         setQueryResult(data);
       } else {
         setQueryResult({
-          answer: `Based on indexed literature analysis: "${liveQuery}" correlates with multi-hop transformer representations and grounded retrieval architectures. Provenance guaranteed via vector distance score.`,
+          answer: `Based on indexed literature analysis: "${liveQuery}" correlates with multi-hop transformer representations and grounded retrieval architectures. In production RAG, chunks are retrieved from ChromaDB with strict page provenance.`,
           citations: [
             { citation_id: '[1]', document_title: 'Attention Is All You Need (Vaswani et al.)', page_number: 4 },
             { citation_id: '[2]', document_title: 'Retrieval-Augmented Generation for NLP (Lewis et al.)', page_number: 2 },
@@ -210,7 +247,7 @@ export default function Home() {
       {/* Interactive Neural Canvas */}
       <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0 opacity-45" />
 
-      {/* 1. World Labs Navigation Bar */}
+      {/* 1. Header Navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#08080a]/80 border-b border-white/[0.08] transition-all">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
@@ -222,20 +259,23 @@ export default function Home() {
                 ResearchMate <span className="text-zinc-500 font-normal">AI</span>
               </span>
               <span className="text-[10px] tracking-[0.14em] uppercase text-zinc-500 font-semibold mt-0.5">
-                Autonomous Literature Intelligence
+                Literature Intelligence Workspace
               </span>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-            <a href="#platform" className="hover:text-white transition-colors">
-              Platform
+            <a href="#workflow" className="hover:text-white transition-colors">
+              How It Works
             </a>
             <a href="#rag-agent" className="hover:text-white transition-colors">
               Grounded RAG
             </a>
+            <a href="#platform" className="hover:text-white transition-colors">
+              Features
+            </a>
             <a href="#personas" className="hover:text-white transition-colors">
-              Workspaces
+              Personas
             </a>
             <a
               href="http://localhost:8000/api/v1/docs"
@@ -286,25 +326,25 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. Hero Section */}
-      <section className="pt-44 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
+      {/* 2. Hero Section (Product-Centric) */}
+      <section className="pt-44 pb-16 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
         {/* Shimmering Pill Badge */}
-        <div className="worldlabs-pill mb-8 border-white/[0.12] bg-white/[0.04]">
+        <div className="worldlabs-pill mb-6 border-white/[0.12] bg-white/[0.04]">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>Grounded RAG 2.0 • Verifiable Academic Citations</span>
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-[-0.04em] text-white leading-[1.05] max-w-5xl mb-6">
-          Autonomous Academic <br />
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-[-0.04em] text-white leading-[1.08] max-w-4xl mb-6">
+          Turn research papers into <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500">
-            Literature Intelligence
+            searchable, explainable knowledge.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-xl text-zinc-400 max-w-2xl font-normal leading-relaxed mb-10">
-          ResearchMate AI transforms how scholars, labs, and universities conduct scientific research: grounded neural retrieval engines that parse, cross-examine, and synthesize verifiable truth from complex academic literature.
+        <p className="text-base sm:text-lg text-zinc-400 max-w-2xl font-normal leading-relaxed mb-10">
+          Upload complex academic PDFs, extract structured methodologies, chat with page-cited RAG agents, and synthesize comparative matrices across literature in seconds.
         </p>
 
         {/* CTA Button Group */}
@@ -318,17 +358,17 @@ export default function Home() {
           </Link>
 
           <a
-            href="#rag-agent"
+            href="#workflow"
             className="worldlabs-btn-secondary px-8 py-3.5 text-sm"
           >
-            <span>Test Live RAG Agent</span>
+            <span>Explore 5-Step Workflow</span>
           </a>
         </div>
 
         {/* Quick Launch Pill Carousel */}
         <div className="flex flex-wrap items-center justify-center gap-3 p-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative z-10 shadow-lg shadow-black/40">
           <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500 px-3">
-            1-Click Access:
+            Instant Demo:
           </span>
           <button
             onClick={() => handleLaunchRole('researcher')}
@@ -361,8 +401,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Interactive Live AI Agent Playground */}
-      <section id="rag-agent" className="py-20 px-6 max-w-6xl mx-auto relative z-10">
+      {/* 3. The 5-Step Product Workflow Pipeline */}
+      <section id="workflow" className="py-20 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-12">
+          <div className="worldlabs-pill mb-3">
+            <span>End-to-End Workflow</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
+            How ResearchMate Works
+          </h2>
+          <p className="text-sm text-zinc-400 max-w-xl mx-auto">
+            A continuous pipeline designed to eliminate manual paper friction and turn raw PDFs into verifiable academic intelligence.
+          </p>
+        </div>
+
+        {/* 5-Step Connected Flow Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-16">
+          {WORKFLOW_STEPS.map((s, idx) => (
+            <div
+              key={s.step}
+              onClick={() => setActiveWorkflowStep(idx)}
+              className={`worldlabs-card p-6 rounded-2xl cursor-pointer transition-all ${
+                activeWorkflowStep === idx
+                  ? 'border-indigo-500/50 bg-[#12121a] shadow-lg shadow-indigo-500/10'
+                  : 'hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-mono text-xs font-bold text-zinc-500">{s.step}</span>
+                {s.icon}
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">{s.title}</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Interactive Live AI Agent Playground */}
+      <section id="rag-agent" className="py-12 px-6 max-w-6xl mx-auto relative z-10">
         <div
           onMouseMove={handleCardMouseMove}
           className="worldlabs-card rounded-3xl p-8 sm:p-12 relative overflow-hidden"
@@ -443,7 +520,7 @@ export default function Home() {
                   <Sparkles className="w-3.5 h-3.5" />
                   Grounded Synthesis Result
                 </span>
-                <span className="text-[11px] text-zinc-400">
+                <span className="text-[11px] text-zinc-400 font-mono">
                   {queryResult.retrieved_chunks} chunks retrieved
                 </span>
               </div>
@@ -480,7 +557,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Feature Cards */}
+      {/* 5. Feature Architecture */}
       <section id="platform" className="py-24 px-6 max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4">
@@ -557,7 +634,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Role Workspaces Showcase */}
+      {/* 6. Role Workspaces Showcase */}
       <section id="personas" className="py-20 px-6 max-w-7xl mx-auto relative z-10">
         <div className="worldlabs-card rounded-3xl p-8 sm:p-14 relative overflow-hidden">
           <div className="max-w-3xl mb-12">
@@ -652,7 +729,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Footer */}
+      {/* 7. Footer */}
       <footer className="py-12 px-6 border-t border-white/[0.08] max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-zinc-500 relative z-10">
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[10px]">

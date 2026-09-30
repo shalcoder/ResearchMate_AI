@@ -14,14 +14,13 @@ export default function SearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  const executeSearch = async (searchQuery: string) => {
+    if (!searchQuery.trim()) return;
 
     setIsLoading(true);
     setHasSearched(true);
     try {
-      const params: any = { q: query.trim() };
+      const params: any = { q: searchQuery.trim() };
       if (venueFilter.trim()) params.venue = venueFilter.trim();
       if (yearFilter.trim()) params.year = parseInt(yearFilter.trim(), 10);
 
@@ -35,108 +34,154 @@ export default function SearchPage() {
     }
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeSearch(query);
+  };
+
+  const handleChipClick = (prompt: string) => {
+    setQuery(prompt);
+    executeSearch(prompt);
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Semantic Scientific Search</h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Query across your repository using natural language embeddings and deep vector similarity.
+      <div className="space-y-8 animate-in fade-in duration-300">
+        {/* Header */}
+        <div className="pb-2">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
+              ChromaDB Vector Retrieval
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Semantic Literature Discovery
+          </h1>
+          <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            Search scientific concepts by semantic intent rather than literal keyword matching. Query high-dimensional embeddings across paper sections.
           </p>
         </div>
 
-        {/* Search & Filter Form */}
-        <form onSubmit={handleSearch} className="p-5 bg-slate-900/80 border border-slate-800 rounded-xl space-y-4">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="e.g. self-attention complexity in machine translation, vision transformers, convolutional architectures..."
-              className="flex-1 px-4 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-              aria-label="Search scientific papers"
-            />
-            <button
-              type="submit"
-              disabled={!query.trim() || isLoading}
-              className="px-6 py-2.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all"
-            >
-              {isLoading ? 'Searching...' : 'Search'}
-            </button>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-slate-800/60">
-            <span className="text-xs text-slate-400 font-medium">Filters:</span>
-            <input
-              type="text"
-              value={venueFilter}
-              onChange={(e) => setVenueFilter(e.target.value)}
-              placeholder="Venue (e.g. NeurIPS, ICML, CVPR)"
-              className="px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-            />
-            <input
-              type="number"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-              placeholder="Year (e.g. 2024)"
-              className="w-32 px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-            />
-            {(venueFilter || yearFilter) && (
+        {/* Search Bar & Filter Form */}
+        <div className="worldlabs-card rounded-3xl p-6 border border-white/10 space-y-4">
+          <form onSubmit={handleSearchSubmit} className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🔍</span>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="e.g. Linear state spaces, self-attention complexity, parametric memory, RL reasoning..."
+                  className="w-full pl-11 pr-4 py-3 text-xs bg-black/50 border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
               <button
-                type="button"
-                onClick={() => {
-                  setVenueFilter('');
-                  setYearFilter('');
-                }}
-                className="text-xs text-slate-400 hover:text-white"
+                type="submit"
+                disabled={!query.trim() || isLoading}
+                className="worldlabs-btn-primary text-xs py-3 px-8 font-semibold disabled:opacity-50 whitespace-nowrap self-stretch sm:self-auto"
               >
-                Reset Filters
+                {isLoading ? 'Searching...' : 'Vector Search'}
               </button>
-            )}
-          </div>
-        </form>
+            </div>
+
+            {/* Quick Prompt Chips */}
+            <div className="flex items-center gap-2 flex-wrap pt-1">
+              <span className="text-[11px] text-slate-500 font-medium mr-1">Suggested Searches:</span>
+              {[
+                'Self-attention quadratic complexity',
+                'Parametric and non-parametric memory in RAG',
+                'Selective structured state space models',
+                'Reinforcement learning cold-start reasoning',
+              ].map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleChipClick(chip)}
+                  className="text-[11px] px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
+            {/* Filters Row */}
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/10">
+              <span className="text-xs text-slate-400 font-medium">Metadata Filters:</span>
+              <input
+                type="text"
+                value={venueFilter}
+                onChange={(e) => setVenueFilter(e.target.value)}
+                placeholder="Venue (e.g. NeurIPS, ArXiv)"
+                className="px-3 py-1.5 text-xs bg-black/40 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              />
+              <input
+                type="number"
+                value={yearFilter}
+                onChange={(e) => setYearFilter(e.target.value)}
+                placeholder="Year (e.g. 2025)"
+                className="w-28 px-3 py-1.5 text-xs bg-black/40 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              />
+              {(venueFilter || yearFilter) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVenueFilter('');
+                    setYearFilter('');
+                  }}
+                  className="text-xs text-slate-400 hover:text-white"
+                >
+                  Reset Filters
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
 
         {/* Results Stream */}
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-28 bg-slate-900/40 border border-slate-800/60 rounded-xl animate-pulse" />
+              <div key={i} className="h-32 rounded-2xl bg-white/5 border border-white/5 animate-pulse" />
             ))}
           </div>
         ) : hasSearched && results.length === 0 ? (
-          <div className="text-center py-16 bg-slate-900/40 border border-slate-800 rounded-xl p-8">
-            <p className="text-sm font-semibold text-slate-300">No matching chunks found</p>
-            <p className="text-xs text-slate-500 mt-1">
-              Try rephrasing your research query or removing venue/year constraints.
+          <div className="worldlabs-card rounded-2xl p-12 text-center border border-white/10 max-w-md mx-auto">
+            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 text-xl text-slate-400">
+              🔍
+            </div>
+            <h3 className="text-sm font-bold text-white mb-1">No matching chunks found</h3>
+            <p className="text-xs text-slate-400 mb-4">
+              Try rephrasing your research question or loosening metadata filters.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             {results.map((r, idx) => (
               <div
-                key={`${r.paper_id}-${r.chunk_index}-${r.page_number}`}
-                className="p-5 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-indigo-500/40 transition-all space-y-2.5"
+                key={`${r.paper_id}-${r.chunk_index}-${idx}`}
+                className="worldlabs-card rounded-2xl p-6 border border-white/10 hover:border-indigo-500/40 transition-all space-y-3"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/5">
                   <Link
                     href={`/papers/${r.paper_id}`}
-                    className="text-sm font-semibold text-white hover:text-indigo-400 transition-colors"
+                    className="text-sm font-bold text-white hover:text-indigo-400 transition-colors"
                   >
                     {r.paper_title}
                   </Link>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      {(r.relevance_score * 100).toFixed(0)}% Match
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                      {(r.relevance_score * 100).toFixed(0)}% Semantic Match
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-400 font-medium">
                       {r.venue || 'Academic'} • {r.publication_year || 'Recent'}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-indigo-400">
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 font-semibold border border-indigo-500/20">
                     {r.section_name}
                   </span>
                   <span>•</span>
@@ -145,20 +190,21 @@ export default function SearchPage() {
                   <span>Chunk #{r.chunk_index + 1}</span>
                 </div>
 
-                <p className="text-xs text-slate-300 font-mono leading-relaxed bg-slate-950/60 p-3 rounded-lg border border-slate-800/80">
-                  {r.content_snippet}
+                <p className="text-xs text-slate-200 font-mono leading-relaxed bg-black/50 p-4 rounded-xl border border-white/5">
+                  "{r.content_snippet}"
                 </p>
 
-                <div className="pt-2 flex items-center justify-end gap-3">
+                <div className="pt-2 flex items-center justify-end gap-3 text-xs">
                   <Link
-                    href={`/chat?paper_id=${r.paper_id}`}
-                    className="text-xs font-medium text-indigo-400 hover:text-indigo-300"
+                    href={`/chat?paper_id=${r.paper_id}&q=${encodeURIComponent(query)}`}
+                    className="text-indigo-400 hover:text-indigo-300 font-semibold"
                   >
-                    Chat with paper →
+                    Chat with paper on this topic →
                   </Link>
+                  <span className="text-slate-600">•</span>
                   <Link
                     href={`/papers/${r.paper_id}`}
-                    className="text-xs font-medium text-slate-400 hover:text-slate-200"
+                    className="text-slate-400 hover:text-white"
                   >
                     Inspect paper →
                   </Link>

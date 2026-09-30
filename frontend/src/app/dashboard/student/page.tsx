@@ -1,149 +1,174 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { DashboardLayout } from '../../../components/layout/DashboardLayout';
-import { StatCard } from '../../../components/dashboard/StatCard';
-import { ActivityFeed } from '../../../components/dashboard/ActivityFeed';
 import { useAuth } from '../../../lib/auth-context';
+import { api } from '../../../lib/api';
+import { ResearchPaper } from '../../../types';
+import { UploadModal } from '../../../components/papers/UploadModal';
 
 export default function StudentDashboardPage() {
   const { user } = useAuth();
+  const [papers, setPapers] = useState<ResearchPaper[]>([]);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+
+  useEffect(() => {
+    api.get('/papers').then((res) => setPapers(res.data || [])).catch(() => {});
+  }, []);
 
   return (
     <DashboardLayout requiredRoles={['student', 'admin']}>
-      <div className="space-y-6">
+      <div className="space-y-8 animate-in fade-in duration-300">
         {/* Welcome Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-slate-900 border border-emerald-900/40">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">
-                Student Workspace
-              </span>
-              <span className="text-xs text-slate-400">{user?.department}</span>
+        <div className="worldlabs-card rounded-3xl p-8 border border-white/10 relative overflow-hidden space-y-4">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2 max-w-xl">
+              <div className="flex items-center gap-2">
+                <span className="worldlabs-pill text-[10px] text-emerald-300 border-emerald-500/30 bg-emerald-500/10">
+                  Student Research Space
+                </span>
+                <span className="text-xs text-slate-400">{user?.department || 'Computer Science'}</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                Welcome back, {user?.name.split(' ')[0]} 👋
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Parse assigned literature, generate 5-point summaries, ask RAG-grounded questions, and export verified academic citations.
+              </p>
             </div>
-            <h2 className="text-2xl font-bold text-slate-100">
-              Welcome back, {user?.name.split(' ')[0]} 👋
-            </h2>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Organize your research papers, extract key contributions, ask RAG-grounded questions, and complete coursework reviews.
-            </p>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsUploadOpen(true)}
+                className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center gap-2 whitespace-nowrap"
+              >
+                <span>+</span> Upload Literature
+              </button>
+            </div>
           </div>
-          <button className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-lg shadow-emerald-600/20 self-start md:self-auto">
-            + Upload New Paper
-          </button>
         </div>
 
-        {/* Key Metrics */}
+        {/* Quick Workflows Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Saved Papers"
-            value="14"
-            change="+3 this week"
-            changeType="positive"
-            icon="Book"
-            description="PDFs parsed & indexed"
-          />
-          <StatCard
-            title="Active Chat Threads"
-            value="8"
-            change="+2 new"
-            changeType="positive"
-            icon="Chat"
-            description="RAG paper QA sessions"
-          />
-          <StatCard
-            title="Study Notes"
-            value="32"
-            change="5 highlighted"
-            changeType="neutral"
-            icon="Note"
-            description="Page-level annotations"
-          />
-          <StatCard
-            title="Assigned by Faculty"
-            value="4"
-            change="1 pending review"
-            changeType="negative"
-            icon="Task"
-            description="Prof. Vishal's collection"
-          />
+          <Link
+            href="/papers"
+            className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-emerald-500/40 transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">📖</span>
+              <span className="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10">
+                {papers.length} Ready
+              </span>
+            </div>
+            <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
+              Paper Summaries
+            </h4>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Extract problem, methodology, findings, and limits in 1-click.
+            </p>
+          </Link>
+
+          <Link
+            href="/chat"
+            className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-indigo-500/40 transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">💬</span>
+              <span className="text-[10px] text-indigo-300 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10">
+                RAG 2.0
+              </span>
+            </div>
+            <h4 className="text-xs font-bold text-white group-hover:text-indigo-300 transition-colors">
+              Grounded Literature Q&A
+            </h4>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Query papers with page citations and zero hallucination.
+            </p>
+          </Link>
+
+          <Link
+            href="/compare"
+            className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-sky-500/40 transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">⚡</span>
+              <span className="text-[10px] text-sky-300 font-semibold px-2 py-0.5 rounded-full bg-sky-500/10">
+                Compare
+              </span>
+            </div>
+            <h4 className="text-xs font-bold text-white group-hover:text-sky-300 transition-colors">
+              Model Contrasts
+            </h4>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Side-by-side matrices comparing algorithms and architectures.
+            </p>
+          </Link>
+
+          <Link
+            href="/projects"
+            className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">📁</span>
+              <span className="text-[10px] text-amber-300 font-semibold px-2 py-0.5 rounded-full bg-amber-500/10">
+                Collections
+              </span>
+            </div>
+            <h4 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+              Coursework Workspaces
+            </h4>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Curate literature reviews and pin benchmark papers.
+            </p>
+          </Link>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {/* Quick Actions Panel */}
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800">
-              <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider mb-4">
-                Student Core Workflows
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition-colors cursor-pointer group">
-                  <div className="text-emerald-400 font-semibold text-xs mb-1 group-hover:text-emerald-300">
-                    📖 Paper Summarizer & Key Metrics
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    Extract problem, methodology, dataset, results, and limitations in 1-click.
-                  </p>
+        {/* Assigned & Seeded Literature */}
+        <div className="worldlabs-card rounded-3xl p-6 border border-white/10 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+            <h3 className="text-sm font-bold text-white">Assigned & Recommended Literature</h3>
+            <Link href="/papers" className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold">
+              View All ({papers.length}) →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {papers.map((p) => (
+              <div
+                key={p.id}
+                className="p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-emerald-500/30 transition-all flex flex-col justify-between space-y-2"
+              >
+                <div>
+                  <span className="text-[10px] text-slate-500 font-mono block mb-1">
+                    {p.publication_year} • {p.venue ? p.venue.split('(')[0] : 'Academic'}
+                  </span>
+                  <h4 className="text-xs font-bold text-white line-clamp-2 leading-snug">
+                    {p.title}
+                  </h4>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition-colors cursor-pointer group">
-                  <div className="text-emerald-400 font-semibold text-xs mb-1 group-hover:text-emerald-300">
-                    💬 Source-Grounded Paper Q&A
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    Ask questions grounded in ChromaDB retrieved page chunks with citation references.
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition-colors cursor-pointer group">
-                  <div className="text-emerald-400 font-semibold text-xs mb-1 group-hover:text-emerald-300">
-                    🎓 Generate Formatted Citations
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    Export IEEE, APA, MLA, and BibTeX citations directly into your coursework.
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition-colors cursor-pointer group">
-                  <div className="text-emerald-400 font-semibold text-xs mb-1 group-hover:text-emerald-300">
-                    📁 Project Workspace Grouping
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    Group literature review papers into projects with custom notes & bookmarks.
-                  </p>
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                  <Link href={`/chat?paper_id=${p.id}`} className="text-emerald-400 hover:text-emerald-300 font-medium">
+                    Chat
+                  </Link>
+                  <Link href={`/papers/${p.id}`} className="text-slate-400 hover:text-white">
+                    Inspect →
+                  </Link>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Activity Feed */}
-          <div>
-            <ActivityFeed
-              title="Recent Student Activity"
-              activities={[
-                {
-                  id: 'act_1',
-                  title: 'Uploaded "Attention Is All You Need.pdf"',
-                  timestamp: '10m ago',
-                  type: 'paper_upload',
-                  metadata: 'Indexed 12 chunks into ChromaDB',
-                },
-                {
-                  id: 'act_2',
-                  title: 'Generated IEEE Citation for ResNet paper',
-                  timestamp: '2h ago',
-                  type: 'note_created',
-                },
-                {
-                  id: 'act_3',
-                  title: 'Chatted with "BERT Pre-training paper"',
-                  timestamp: '1d ago',
-                  type: 'chat_session',
-                  metadata: '4 source-grounded answers generated',
-                },
-              ]}
-            />
+            ))}
           </div>
         </div>
       </div>
+
+      <UploadModal
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        onSuccess={() => {
+          api.get('/papers').then((res) => setPapers(res.data || [])).catch(() => {});
+        }}
+      />
     </DashboardLayout>
   );
 }
