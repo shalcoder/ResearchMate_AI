@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "ResearchMate AI"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
-    DEBUG: bool = True
+    DEBUG: bool = False  # Contributor A
 
     # Security & JWT
     SECRET_KEY: str = "super_secret_jwt_dev_key_for_researchmate_ai_2026_auth"
