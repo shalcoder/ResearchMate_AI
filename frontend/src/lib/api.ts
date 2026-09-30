@@ -49,6 +49,18 @@ class ApiError extends Error {
   }
 }
 
+interface UploadProgress {
+  loaded: number;
+  total: number;
+  percent?: number;
+}
+
+interface UploadOptions {
+  signal?: AbortSignal;
+  onProgress?: (progress: UploadProgress) => void;
+  onUploadComplete?: () => void;
+}
+
 function getAuthToken(): string | null {
   if (typeof window !== 'undefined') {
     return localStorage.getItem('researchmate_token');
@@ -116,11 +128,93 @@ async function request(method: string, endpoint: string, data?: any, options: { 
   };
 }
 
+function upload(endpoint: string, data: FormData, options: UploadOptions = {}) {
+  return new Promise<{ data: any; status: number; headers: Headers }>((resolve, reject) => {
+    if (options.signal?.aborted) {
+      const error = new Error('Upload canceled.');
+      error.name = 'AbortError';
+      reject(error);
+      return;
+    }
+
+    const xhr = new XMLHttpRequest();
+    const url = endpoint.startsWith('http')
+      ? endpoint
+      : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    let settled = false;
+
+    const cleanup = () => options.signal?.removeEventListener('abort', abort);
+    const resolveOnce = (value: { data: any; status: number; headers: Headers }) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(value);
+    };
+    const rejectOnce = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+    const abort = () => xhr.abort();
+
+    xhr.upload.addEventListener('progress', (event) => {
+      options.onProgress?.({
+        loaded: event.loaded,
+        total: event.total,
+        percent: event.lengthComputable && event.total > 0
+          ? Math.round((event.loaded / event.total) * 100)
+          : undefined,
+      });
+    });
+    xhr.upload.addEventListener('load', () => options.onUploadComplete?.());
+    xhr.addEventListener('load', () => {
+      const contentType = xhr.getResponseHeader('content-type') || '';
+      let responseData: any = xhr.responseText;
+      if (contentType.includes('application/json')) {
+        try {
+          responseData = JSON.parse(xhr.responseText);
+        } catch {
+          responseData = null;
+        }
+      }
+
+      if (xhr.status < 200 || xhr.status >= 300) {
+        const message = responseData?.detail || `Request failed with status ${xhr.status}`;
+        rejectOnce(new ApiError(message, xhr.status, responseData));
+        return;
+      }
+
+      const headers = new Headers();
+      xhr.getAllResponseHeaders().trim().split(/[\r\n]+/).forEach((line) => {
+        const separator = line.indexOf(':');
+        if (separator > 0) {
+          headers.append(line.slice(0, separator).trim(), line.slice(separator + 1).trim());
+        }
+      });
+      resolveOnce({ data: responseData, status: xhr.status, headers });
+    });
+    xhr.addEventListener('error', () => rejectOnce(new Error('Network error while uploading file.')));
+    xhr.addEventListener('abort', () => {
+      const error = new Error('Upload canceled.');
+      error.name = 'AbortError';
+      rejectOnce(error);
+    });
+
+    options.signal?.addEventListener('abort', abort, { once: true });
+    xhr.open('POST', url);
+    const token = getAuthToken();
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.send(data);
+  });
+}
+
 export const api = {
   get: (url: string, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
     request('GET', url, undefined, options),
   post: (url: string, data?: any, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
     request('POST', url, data, options),
+  upload,
   put: (url: string, data?: any, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
     request('PUT', url, data, options),
   delete: (url: string, options?: { headers?: Record<string, string>; params?: Record<string, any> }) =>
