@@ -22,7 +22,7 @@ body {
   background-color: var(--background);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -37,23 +37,44 @@ body {
   background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
 }
 
-/* World Labs Glass Card */
+/* World Labs Glass Card with Mouse Spotlight */
 .worldlabs-card {
-  background: rgba(16, 16, 22, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  background: rgba(14, 14, 20, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
     0 20px 40px -15px rgba(0, 0, 0, 0.7);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.worldlabs-card::before {
+  content: '';
+  position: absolute;
+  top: var(--mouse-y, -1000px);
+  left: var(--mouse-x, -1000px);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  opacity: 0;
+}
+
+.worldlabs-card:hover::before {
+  opacity: 1;
 }
 
 .worldlabs-card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-    0 25px 50px -12px rgba(99, 102, 241, 0.15);
+    0 25px 50px -12px rgba(99, 102, 241, 0.2);
 }
 
 /* World Labs Pill Badge */
@@ -61,16 +82,34 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.4rem 0.95rem;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: #d1d5db;
-  backdrop-filter: blur(8px);
+  color: #e2e8f0;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.worldlabs-pill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  animation: pillShimmer 4s ease-in-out infinite;
+}
+
+@keyframes pillShimmer {
+  0% { left: -100%; }
+  35%, 100% { left: 100%; }
 }
 
 /* World Labs Primary CTA Button */
@@ -79,21 +118,22 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.6rem;
+  padding: 0.8rem 1.8rem;
   border-radius: 9999px;
   background: #ffffff;
   color: #08080a;
   font-weight: 600;
   font-size: 0.875rem;
   letter-spacing: -0.01em;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
 .worldlabs-btn-primary:hover {
-  background: #e4e4e7;
-  transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.35);
+  background: #f1f5f9;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.45);
 }
 
 .worldlabs-btn-primary:active {
@@ -106,22 +146,23 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.6rem;
+  padding: 0.8rem 1.8rem;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: #ffffff;
   font-weight: 500;
   font-size: 0.875rem;
   letter-spacing: -0.01em;
   backdrop-filter: blur(12px);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
 .worldlabs-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
 }
 
 .worldlabs-btn-secondary:active {

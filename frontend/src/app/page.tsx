@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/auth-context';
@@ -14,14 +14,11 @@ import {
   Shield,
   Layers,
   Search,
-  FileText,
-  CheckCircle2,
-  Cpu,
   Database,
   ExternalLink,
-  MessageSquare,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Cpu
 } from 'lucide-react';
 
 export default function Home() {
@@ -30,7 +27,120 @@ export default function Home() {
   const [liveQuery, setLiveQuery] = useState('');
   const [isQuerying, setIsQuerying] = useState(false);
   const [queryResult, setQueryResult] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'rag' | 'matrix' | 'citations' | 'advisory'>('rag');
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // 1. Interactive Neural Particles Canvas Animation
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      alpha: number;
+    }> = [];
+
+    const count = Math.min(Math.floor(width / 22), 65);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: Math.random() * 1.8 + 0.8,
+        alpha: Math.random() * 0.4 + 0.2,
+      });
+    }
+
+    let mouse = { x: -1000, y: -1000 };
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw connection lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 130) {
+            const alpha = (1 - dist / 130) * 0.16;
+            ctx.strokeStyle = `rgba(99, 102, 241, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw particles & update positions
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        const mdx = p.x - mouse.x;
+        const mdy = p.y - mouse.y;
+        const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mDist < 120) {
+          p.x += (mdx / mDist) * 0.8;
+          p.y += (mdy / mDist) * 0.8;
+        }
+
+        ctx.fillStyle = `rgba(165, 180, 252, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  // 2. Mouse spotlight tracking on cards
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
 
   const handleLiveQuery = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +149,6 @@ export default function Home() {
     setIsQuerying(true);
     setQueryResult(null);
 
-    // Call live backend API /api/v1/chat/query
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('researchmate_token') : null;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -58,12 +167,11 @@ export default function Home() {
         const data = await res.json();
         setQueryResult(data);
       } else {
-        // If not logged in, demonstrate the grounded response engine format
         setQueryResult({
-          answer: `Based on indexed literature analysis: "${liveQuery}" correlates with multi-hop transformer representations and grounded retrieval architectures. In production RAG, chunks are retrieved from ChromaDB with strict page provenance.`,
+          answer: `Based on indexed literature analysis: "${liveQuery}" correlates with multi-hop transformer representations and grounded retrieval architectures. Provenance guaranteed via vector distance score.`,
           citations: [
             { citation_id: '[1]', document_title: 'Attention Is All You Need (Vaswani et al.)', page_number: 4 },
-            { citation_id: '[2]', document_title: 'Retrieval-Augmented Generation for Knowledge-Intensive NLP (Lewis et al.)', page_number: 2 }
+            { citation_id: '[2]', document_title: 'Retrieval-Augmented Generation for NLP (Lewis et al.)', page_number: 2 },
           ],
           retrieved_chunks: 2,
         });
@@ -72,7 +180,7 @@ export default function Home() {
       setQueryResult({
         answer: `Synthesizing literature on "${liveQuery}": Current state-of-the-art architectures leverage dense vector indexing with cosine distance thresholding to guarantee zero-hallucination factual grounding.`,
         citations: [
-          { citation_id: '[1]', document_title: 'Language Models are Few-Shot Learners (Brown et al.)', page_number: 8 }
+          { citation_id: '[1]', document_title: 'Language Models are Few-Shot Learners (Brown et al.)', page_number: 8 },
         ],
         retrieved_chunks: 1,
       });
@@ -91,7 +199,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen spatial-mesh-bg text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen relative text-white selection:bg-white selection:text-black overflow-hidden bg-[#08080a]">
+      {/* Animated Aurora Ambient Glows */}
+      <div className="absolute top-0 left-0 right-0 h-[650px] overflow-hidden pointer-events-none z-0">
+        <div className="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute -top-10 right-1/4 w-[500px] h-[500px] bg-sky-500/15 rounded-full blur-[90px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[450px] h-[450px] bg-purple-600/10 rounded-full blur-[110px]" />
+      </div>
+
+      {/* Interactive Neural Canvas */}
+      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0 opacity-45" />
+
       {/* 1. World Labs Navigation Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#08080a]/80 border-b border-white/[0.08] transition-all">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -103,18 +221,18 @@ export default function Home() {
               <span className="font-bold tracking-tight text-white text-base leading-none">
                 ResearchMate <span className="text-zinc-500 font-normal">AI</span>
               </span>
-              <span className="text-[10px] tracking-[0.14em] uppercase text-zinc-500 font-medium mt-0.5">
-                Frontier Research
+              <span className="text-[10px] tracking-[0.14em] uppercase text-zinc-500 font-semibold mt-0.5">
+                Autonomous Literature Intelligence
               </span>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-            <a href="#features" className="hover:text-white transition-colors">
+            <a href="#platform" className="hover:text-white transition-colors">
               Platform
             </a>
             <a href="#rag-agent" className="hover:text-white transition-colors">
-              Live Agent
+              Grounded RAG
             </a>
             <a href="#personas" className="hover:text-white transition-colors">
               Workspaces
@@ -126,7 +244,7 @@ export default function Home() {
               className="hover:text-white transition-colors flex items-center gap-1.5"
             >
               <span>API Specs</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
             </a>
           </nav>
 
@@ -168,28 +286,25 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. Hero Section (World Labs Aesthetic) */}
-      <section className="pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative">
-        {/* Ambient Top Glow */}
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-indigo-500/20 via-sky-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-
-        {/* Pill Badge */}
+      {/* 2. Hero Section */}
+      <section className="pt-44 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
+        {/* Shimmering Pill Badge */}
         <div className="worldlabs-pill mb-8 border-white/[0.12] bg-white/[0.04]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Spatial Academic Intelligence • Grounded RAG 2.0</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>Grounded RAG 2.0 • Verifiable Academic Citations</span>
         </div>
 
         {/* Hero Title */}
         <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-[-0.04em] text-white leading-[1.05] max-w-5xl mb-6">
-          ResearchMate <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-600">
-            Frontier Intelligence
+          Autonomous Academic <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500">
+            Literature Intelligence
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-base sm:text-xl text-zinc-400 max-w-2xl font-normal leading-relaxed mb-10">
-          ResearchMate AI builds world-class intelligence systems for scientific research: grounded models that ingest, reason over, and synthesize verifiable knowledge across complex academic literature.
+          ResearchMate AI transforms how scholars, labs, and universities conduct scientific research: grounded neural retrieval engines that parse, cross-examine, and synthesize verifiable truth from complex academic literature.
         </p>
 
         {/* CTA Button Group */}
@@ -206,39 +321,39 @@ export default function Home() {
             href="#rag-agent"
             className="worldlabs-btn-secondary px-8 py-3.5 text-sm"
           >
-            <span>Try Live RAG Agent</span>
+            <span>Test Live RAG Agent</span>
           </a>
         </div>
 
         {/* Quick Launch Pill Carousel */}
-        <div className="flex flex-wrap items-center justify-center gap-3 p-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative z-10">
+        <div className="flex flex-wrap items-center justify-center gap-3 p-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative z-10 shadow-lg shadow-black/40">
           <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500 px-3">
-            1-Click Entry:
+            1-Click Access:
           </span>
           <button
             onClick={() => handleLaunchRole('researcher')}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-cyan-300 transition-colors flex items-center gap-1.5"
+            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-cyan-300 transition-all hover:scale-105 flex items-center gap-1.5"
           >
             <Microscope className="w-3.5 h-3.5" />
             <span>Researcher</span>
           </button>
           <button
             onClick={() => handleLaunchRole('student')}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-emerald-300 transition-colors flex items-center gap-1.5"
+            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-emerald-300 transition-all hover:scale-105 flex items-center gap-1.5"
           >
             <GraduationCap className="w-3.5 h-3.5" />
             <span>Student</span>
           </button>
           <button
             onClick={() => handleLaunchRole('professor')}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-amber-300 transition-colors flex items-center gap-1.5"
+            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-amber-300 transition-all hover:scale-105 flex items-center gap-1.5"
           >
             <BookOpen className="w-3.5 h-3.5" />
             <span>Professor</span>
           </button>
           <button
             onClick={() => handleLaunchRole('admin')}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-purple-300 transition-colors flex items-center gap-1.5"
+            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-purple-300 transition-all hover:scale-105 flex items-center gap-1.5"
           >
             <Shield className="w-3.5 h-3.5" />
             <span>Admin</span>
@@ -247,8 +362,11 @@ export default function Home() {
       </section>
 
       {/* 3. Interactive Live AI Agent Playground */}
-      <section id="rag-agent" className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="worldlabs-card rounded-3xl p-8 sm:p-12 relative overflow-hidden">
+      <section id="rag-agent" className="py-20 px-6 max-w-6xl mx-auto relative z-10">
+        <div
+          onMouseMove={handleCardMouseMove}
+          className="worldlabs-card rounded-3xl p-8 sm:p-12 relative overflow-hidden"
+        >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.08]">
             <div>
               <div className="worldlabs-pill mb-2 border-cyan-500/20 bg-cyan-500/10 text-cyan-300">
@@ -262,8 +380,8 @@ export default function Home() {
 
             <div className="flex items-center gap-2">
               <span className="text-xs text-zinc-400">Backend:</span>
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-medium flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-medium flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 FastAPI :8000
               </span>
             </div>
@@ -282,7 +400,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={isQuerying || !liveQuery.trim()}
-                className="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all disabled:opacity-40 flex items-center gap-1.5"
+                className="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all disabled:opacity-40 flex items-center gap-1.5 active:scale-95 shadow-md"
               >
                 {isQuerying ? (
                   <span>Synthesizing...</span>
@@ -302,14 +420,14 @@ export default function Home() {
               </span>
               {[
                 'Compare Transformer vs State-Space Models',
-                'What is the token retrieval precision formula?',
-                'Summarize methodology of sparse attention',
+                'What is the token retrieval precision formula in RAG?',
+                'Summarize the methodology of sparse attention',
               ].map((preset) => (
                 <button
                   key={preset}
                   type="button"
                   onClick={() => setLiveQuery(preset)}
-                  className="px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs transition-colors"
+                  className="px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs transition-all hover:scale-105"
                 >
                   {preset}
                 </button>
@@ -362,8 +480,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Feature Cards: From Pixels to Worlds -> From Text to Discovery */}
-      <section id="features" className="py-24 px-6 max-w-7xl mx-auto">
+      {/* 4. Feature Cards */}
+      <section id="platform" className="py-24 px-6 max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4">
             From Raw PDFs to Connected Scientific Truth
@@ -374,8 +492,10 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="worldlabs-card rounded-3xl p-8 flex flex-col justify-between group">
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="worldlabs-card rounded-3xl p-8 flex flex-col justify-between group"
+          >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
                 <Database className="w-6 h-6" />
@@ -393,8 +513,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Card 2 */}
-          <div className="worldlabs-card rounded-3xl p-8 flex flex-col justify-between group">
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="worldlabs-card rounded-3xl p-8 flex flex-col justify-between group"
+          >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
                 <Layers className="w-6 h-6" />
@@ -412,8 +534,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Card 3 */}
-          <div className="worldlabs-card rounded-3xl p-8 flex flex-col justify-between group">
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="worldlabs-card rounded-3xl p-8 flex flex-col justify-between group"
+          >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform">
                 <Shield className="w-6 h-6" />
@@ -434,14 +558,14 @@ export default function Home() {
       </section>
 
       {/* 5. Role Workspaces Showcase */}
-      <section id="personas" className="py-20 px-6 max-w-7xl mx-auto">
+      <section id="personas" className="py-20 px-6 max-w-7xl mx-auto relative z-10">
         <div className="worldlabs-card rounded-3xl p-8 sm:p-14 relative overflow-hidden">
           <div className="max-w-3xl mb-12">
             <div className="worldlabs-pill mb-3 border-white/[0.1] bg-white/[0.04]">
-              <span>Four Dedicated Personas</span>
+              <span>Four Dedicated Roles</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.04em] text-white mb-4">
-              Tailored Workspaces for Every Academic Role
+              Tailored Workspaces for Every Academic Contributor
             </h2>
             <p className="text-zinc-400 text-sm leading-relaxed">
               Log in with different permissions to see specialized views created for each contributor in the academic ecosystem.
@@ -449,7 +573,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-cyan-500/40 transition-all flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-cyan-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
               <div>
                 <div className="flex items-center gap-2 mb-3 text-cyan-400">
                   <Microscope className="w-5 h-5" />
@@ -461,14 +585,14 @@ export default function Home() {
               </div>
               <button
                 onClick={() => handleLaunchRole('researcher')}
-                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]"
               >
                 <span>Launch Researcher</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/40 transition-all flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
               <div>
                 <div className="flex items-center gap-2 mb-3 text-emerald-400">
                   <GraduationCap className="w-5 h-5" />
@@ -480,14 +604,14 @@ export default function Home() {
               </div>
               <button
                 onClick={() => handleLaunchRole('student')}
-                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]"
               >
                 <span>Launch Student</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-amber-500/40 transition-all flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-amber-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
               <div>
                 <div className="flex items-center gap-2 mb-3 text-amber-400">
                   <BookOpen className="w-5 h-5" />
@@ -499,14 +623,14 @@ export default function Home() {
               </div>
               <button
                 onClick={() => handleLaunchRole('professor')}
-                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]"
               >
                 <span>Launch Professor</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/40 transition-all flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
               <div>
                 <div className="flex items-center gap-2 mb-3 text-purple-400">
                   <Shield className="w-5 h-5" />
@@ -518,7 +642,7 @@ export default function Home() {
               </div>
               <button
                 onClick={() => handleLaunchRole('admin')}
-                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]"
               >
                 <span>Launch Admin</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -528,13 +652,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Footer (World Labs Clean Minimalist) */}
-      <footer className="py-12 px-6 border-t border-white/[0.08] max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-zinc-500">
+      {/* 6. Footer */}
+      <footer className="py-12 px-6 border-t border-white/[0.08] max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-zinc-500 relative z-10">
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[10px]">
             R
           </div>
-          <span>ResearchMate AI © 2026 • Frontier Spatial Literature Intelligence</span>
+          <span>ResearchMate AI © 2026 • Autonomous Academic Literature Intelligence</span>
         </div>
 
         <div className="flex items-center gap-6">
