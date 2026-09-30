@@ -33,7 +33,7 @@ export const Sidebar: React.FC = () => {
   const { user, hasRole } = useAuth();
 
   return (
-    <aside className="w-64 bg-[#08080a] border-r border-white/[0.08] flex flex-col justify-between p-4 min-h-[calc(100vh-4rem)]">
+    <aside className="hidden md:flex w-64 bg-[#08080a] border-r border-white/[0.08] flex-col justify-between p-4 min-h-[calc(100vh-4rem)] shrink-0">
       <div>
         {/* Active Role Card */}
         <div className="mb-5 p-3.5 rounded-2xl bg-[#0f0f14] border border-white/[0.08] shadow-sm">

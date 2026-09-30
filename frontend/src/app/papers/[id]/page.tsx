@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ResearchPaper, PaperChunk, PaperSummary } from '@/types';
 import { api } from '@/lib/api';
+import { Button, StatusBadge, Badge, Skeleton, EmptyState } from '@/components/ui';
+import { MessageSquare, Columns, FileText, ArrowLeft, Download, Sparkles, Check, Bookmark } from 'lucide-react';
 
-type DetailTab = 'summary' | 'findings' | 'methodology' | 'gaps' | 'chunks';
+type WorkbenchTab = 'overview' | 'summary' | 'findings' | 'methodology' | 'gaps' | 'evidence';
 
 export default function PaperDetailPage() {
   const params = useParams();
@@ -17,11 +19,11 @@ export default function PaperDetailPage() {
   const [paper, setPaper] = useState<ResearchPaper | null>(null);
   const [chunks, setChunks] = useState<PaperChunk[]>([]);
   const [summary, setSummary] = useState<PaperSummary | null>(null);
-  const [activeTab, setActiveTab] = useState<DetailTab>('summary');
+  const [activeTab, setActiveTab] = useState<WorkbenchTab>('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
-  const [showBibtexModal, setShowBibtexModal] = useState(false);
-  const [copiedBibtex, setCopiedBibtex] = useState(false);
+  const [showCitationModal, setShowCitationModal] = useState(false);
+  const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
   useEffect(() => {
     if (!paperId) return;
@@ -57,6 +59,7 @@ export default function PaperDetailPage() {
       setIsGeneratingSummary(true);
       const res = await api.post(`/papers/${paperId}/summary`);
       setSummary(res.data);
+      setActiveTab('summary');
     } catch (err) {
       alert('Failed to generate summary.');
     } finally {
@@ -64,28 +67,37 @@ export default function PaperDetailPage() {
     }
   };
 
-  const bibtexSnippet = paper
-    ? `@article{${(paper.authors?.[0] || 'Author').split(' ').pop()?.toLowerCase() || 'paper'}${paper.publication_year || '2024'},\n` +
-      `  title = {${paper.title}},\n` +
-      `  author = {${paper.authors?.join(' and ') || 'Unknown'}},\n` +
-      `  journal = {${paper.venue || 'ArXiv Pre-print'}},\n` +
-      `  year = {${paper.publication_year || '2024'}},\n` +
-      (paper.doi ? `  doi = {${paper.doi}}\n` : '') +
-      `}`
-    : '';
+  const getCitationText = (format: 'bibtex' | 'ieee' | 'apa') => {
+    if (!paper) return '';
+    const authorList = paper.authors?.join(', ') || 'Unknown Author';
+    const firstAuthor = paper.authors?.[0] || 'Author';
+    const firstAuthorLast = firstAuthor.split(' ').pop()?.toLowerCase() || 'paper';
+    const year = paper.publication_year || '2024';
 
-  const handleCopyBibtex = () => {
-    navigator.clipboard.writeText(bibtexSnippet);
-    setCopiedBibtex(true);
-    setTimeout(() => setCopiedBibtex(false), 2000);
+    if (format === 'bibtex') {
+      return `@article{${firstAuthorLast}${year},\n  title = {${paper.title}},\n  author = {${paper.authors?.join(' and ') || 'Unknown'}},\n  journal = {${paper.venue || 'ArXiv Pre-print'}},\n  year = {${year}},\n${paper.doi ? `  doi = {${paper.doi}}\n` : ''}}`;
+    }
+    if (format === 'ieee') {
+      return `${authorList}, "${paper.title}," ${paper.venue || 'ArXiv Pre-print'}, ${year}.${paper.doi ? ` doi: ${paper.doi}.` : ''}`;
+    }
+    // APA
+    return `${authorList} (${year}). ${paper.title}. ${paper.venue || 'ArXiv Pre-print'}.${paper.doi ? ` https://doi.org/${paper.doi}` : ''}`;
+  };
+
+  const handleCopyCitation = (format: 'bibtex' | 'ieee' | 'apa') => {
+    navigator.clipboard.writeText(getCitationText(format));
+    setCopiedFormat(format);
+    setTimeout(() => setCopiedFormat(null), 2000);
   };
 
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="h-96 flex flex-col items-center justify-center text-slate-400 text-xs space-y-3">
-          <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-          <p>Connecting to paper neural index & chunk representations...</p>
+        <div className="space-y-6 max-w-5xl mx-auto">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-96 w-full" />
         </div>
       </DashboardLayout>
     );
@@ -94,46 +106,48 @@ export default function PaperDetailPage() {
   if (!paper) {
     return (
       <DashboardLayout>
-        <div className="worldlabs-card rounded-2xl p-12 text-center border border-white/10 max-w-md mx-auto my-12">
-          <p className="text-white font-bold text-sm mb-2">Paper Not Found</p>
-          <p className="text-xs text-slate-400 mb-4">The requested paper ID does not exist in your corpus.</p>
-          <Link href="/papers" className="worldlabs-btn-primary text-xs py-2 px-4">
-            ← Back to Library
-          </Link>
-        </div>
+        <EmptyState
+          title="Paper Not Found"
+          description="The requested research paper ID does not exist in your indexed literature repository."
+          actionLabel="← Back to Library"
+          onAction={() => router.push('/papers')}
+        />
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 animate-in fade-in duration-300">
-        {/* Navigation Breadcrumb */}
+      <div className="space-y-8 max-w-6xl mx-auto animate-in fade-in duration-300">
+        {/* Back Link & Meta Provenance Header */}
         <div className="flex items-center justify-between">
           <Link
             href="/papers"
-            className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors"
+            className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors font-medium"
           >
-            <span>←</span> Back to Library
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Research Library</span>
           </Link>
+
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-slate-500 font-mono">
-              ID: {paper.id.slice(0, 8)}...
-            </span>
+            <StatusBadge
+              status={paper.total_chunks > 0 ? 'indexed' : 'processing'}
+              label={`${paper.total_chunks} Vector Chunks`}
+            />
           </div>
         </div>
 
-        {/* Paper Main Header Card */}
-        <div className="worldlabs-card rounded-3xl p-8 border border-white/10 relative overflow-hidden space-y-5">
+        {/* Paper Workbench Editorial Header */}
+        <div className="worldlabs-card rounded-3xl p-8 sm:p-10 border border-white/10 relative overflow-hidden space-y-6">
           <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-            <div className="space-y-3 max-w-3xl">
+            <div className="space-y-4 max-w-3xl">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
-                  {paper.venue || 'Academic Literature'}
+                  {paper.venue ? paper.venue.split('(')[0] : 'Academic Publication'}
                 </span>
-                <span className="text-xs text-slate-400 font-semibold">
+                <span className="text-xs text-slate-400 font-mono font-semibold">
                   Published {paper.publication_year || 'Recent'}
                 </span>
                 {paper.doi && (
@@ -141,21 +155,22 @@ export default function PaperDetailPage() {
                     DOI: {paper.doi}
                   </span>
                 )}
-                <span className="text-xs text-slate-400">
-                  • {paper.total_pages} Pages • {paper.total_chunks} Chunks
+                <span className="text-xs text-slate-500 font-mono">
+                  • {paper.total_pages} Pages • {chunks.length} Vectors
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+              <h1 className="text-display text-white tracking-tight leading-snug">
                 {paper.title}
               </h1>
 
+              {/* Authors List */}
               <div className="flex items-center gap-2 flex-wrap text-xs text-slate-300">
-                <span className="text-slate-500">Authors:</span>
+                <span className="text-slate-500 font-medium">Authors:</span>
                 {paper.authors?.map((author, idx) => (
                   <span
                     key={idx}
-                    className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 font-medium"
+                    className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-medium"
                   >
                     {author}
                   </span>
@@ -163,45 +178,49 @@ export default function PaperDetailPage() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Quick Workbench Action Capsules */}
             <div className="flex flex-wrap lg:flex-col gap-2.5 shrink-0 relative z-10">
               <Link
                 href={`/chat?paper_id=${paper.id}`}
                 className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20"
               >
-                <span>💬</span> Grounded RAG Chat
+                <MessageSquare className="w-4 h-4" />
+                <span>Ask Paper (RAG)</span>
               </Link>
               <Link
                 href={`/compare?target=${paper.id}`}
                 className="worldlabs-btn-secondary text-xs py-2.5 px-4 font-medium flex items-center justify-center gap-2"
               >
-                <span>⚡</span> Compare with Paper
+                <Columns className="w-4 h-4" />
+                <span>Compare Model</span>
               </Link>
               <button
-                onClick={() => setShowBibtexModal(true)}
+                onClick={() => setShowCitationModal(true)}
                 className="worldlabs-btn-secondary text-xs py-2.5 px-4 font-medium flex items-center justify-center gap-2"
               >
-                <span>📋</span> Export BibTeX
+                <Download className="w-4 h-4" />
+                <span>Export Citation</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Workbench Tab Navigation */}
         <div className="worldlabs-card rounded-2xl p-1.5 border border-white/10 flex items-center gap-1 overflow-x-auto">
           {[
-            { id: 'summary', label: 'Executive Summary' },
-            { id: 'findings', label: 'Key Findings & Benchmarks' },
-            { id: 'methodology', label: 'Methodology & Architecture' },
-            { id: 'gaps', label: 'Limitations & Research Gaps' },
-            { id: 'chunks', label: `Vector Chunks (${chunks.length})` },
+            { id: 'overview', label: 'Paper Overview' },
+            { id: 'summary', label: 'AI Structured Summary' },
+            { id: 'findings', label: 'Key Breakthroughs' },
+            { id: 'methodology', label: 'Methodology & Datasets' },
+            { id: 'gaps', label: 'Research Gaps & Limits' },
+            { id: 'evidence', label: `Vector Chunks (${chunks.length})` },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as DetailTab)}
+              onClick={() => setActiveTab(tab.id as WorkbenchTab)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  ? 'bg-white text-black font-bold shadow-md shadow-white/10'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -210,59 +229,88 @@ export default function PaperDetailPage() {
           ))}
         </div>
 
-        {/* Tab Content Display */}
+        {/* Editorial Content Container */}
         <div className="space-y-6">
-          {/* TAB 1: EXECUTIVE SUMMARY */}
+          {/* TAB 1: OVERVIEW */}
+          {activeTab === 'overview' && (
+            <div className="worldlabs-card rounded-3xl p-8 border border-white/10 space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
+                    Source Fact
+                  </span>
+                  <h3 className="text-sm font-bold text-white">Document Abstract</h3>
+                </div>
+                <span className="text-[11px] text-slate-500 font-mono">Page 1 • Section 1</span>
+              </div>
+
+              <div className="text-sm text-slate-200 leading-relaxed font-normal whitespace-pre-line max-w-4xl">
+                {paper.abstract || 'No abstract provided for this research paper.'}
+              </div>
+
+              {/* Technical Specifications */}
+              <div className="pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Total Pages</span>
+                  <span className="text-base font-bold text-white font-mono">{paper.total_pages}</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Semantic Chunks</span>
+                  <span className="text-base font-bold text-sky-400 font-mono">{chunks.length}</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Venue / Journal</span>
+                  <span className="text-xs font-semibold text-white truncate block">{paper.venue || 'Academic'}</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Vector Embedding Model</span>
+                  <span className="text-xs font-mono text-indigo-300">MiniLM-L6-v2</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: AI STRUCTURED SUMMARY */}
           {activeTab === 'summary' && (
             <div className="space-y-6">
               {!summary ? (
-                <div className="worldlabs-card rounded-2xl p-10 text-center border border-white/10 max-w-lg mx-auto">
-                  <div className="w-12 h-12 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto mb-3 text-xl">
-                    ✨
-                  </div>
-                  <h3 className="text-sm font-bold text-white mb-1">
-                    Structured 5-Point Summary Not Generated
-                  </h3>
-                  <p className="text-xs text-slate-400 mb-5 leading-relaxed">
-                    Execute Gemini Grounded Analysis to extract executive insights, empirical contributions, experimental architecture, and open research gaps.
-                  </p>
-                  <button
-                    onClick={handleGenerateSummary}
-                    disabled={isGeneratingSummary}
-                    className="worldlabs-btn-primary text-xs py-2.5 px-6 font-semibold disabled:opacity-50"
-                  >
-                    {isGeneratingSummary ? 'Analyzing Paper Content...' : 'Generate 5-Point Scientific Summary'}
-                  </button>
-                </div>
+                <EmptyState
+                  icon={<Sparkles className="w-6 h-6 text-indigo-400" />}
+                  title="5-Point Scientific Summary Not Generated"
+                  description="Run Gemini Grounded Analysis to extract executive insights, empirical contributions, experimental architecture, and open research gaps."
+                  actionLabel={isGeneratingSummary ? 'Analyzing Content...' : 'Generate 5-Point Summary'}
+                  onAction={handleGenerateSummary}
+                />
               ) : (
                 <div className="space-y-6">
                   {/* Executive Overview */}
-                  <div className="worldlabs-card rounded-2xl p-6 border border-white/10 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
-                        Executive Summary
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        Page 1 • Abstract & Introduction
-                      </span>
+                  <div className="worldlabs-card rounded-3xl p-8 border border-white/10 space-y-3 bg-gradient-to-br from-indigo-950/20 via-slate-900/60 to-slate-900/40">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                          AI Interpretation
+                        </span>
+                        <h3 className="text-sm font-bold text-white">Executive Synthesis</h3>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">Grounded on Full Document</span>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                    <p className="text-sm text-slate-200 leading-relaxed">
                       {summary.executive_summary}
                     </p>
                   </div>
 
                   {/* 2-Column Insight Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="worldlabs-card rounded-2xl p-6 border border-emerald-500/20 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-emerald-400 text-sm">✓</span>
+                    <div className="worldlabs-card rounded-3xl p-6 border border-emerald-500/20 space-y-3">
+                      <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                        <span className="text-emerald-400 font-bold">✓</span>
                         <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-                          Empirical Findings
+                          Key Empirical Breakthroughs
                         </h4>
                       </div>
                       <ul className="space-y-2 text-xs text-slate-300">
                         {summary.key_findings.map((finding, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
+                          <li key={idx} className="flex items-start gap-2.5">
                             <span className="text-emerald-400 font-bold shrink-0">•</span>
                             <span className="leading-relaxed">{finding}</span>
                           </li>
@@ -270,11 +318,11 @@ export default function PaperDetailPage() {
                       </ul>
                     </div>
 
-                    <div className="worldlabs-card rounded-2xl p-6 border border-amber-500/20 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-amber-400 text-sm">⚙</span>
+                    <div className="worldlabs-card rounded-3xl p-6 border border-amber-500/20 space-y-3">
+                      <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                        <span className="text-amber-400">⚙</span>
                         <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                          Methodology Overview
+                          Algorithmic Formulation
                         </h4>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
@@ -287,83 +335,92 @@ export default function PaperDetailPage() {
             </div>
           )}
 
-          {/* TAB 2: KEY FINDINGS & BENCHMARKS */}
+          {/* TAB 3: KEY FINDINGS & BENCHMARKS */}
           {activeTab === 'findings' && (
-            <div className="worldlabs-card rounded-2xl p-6 border border-white/10 space-y-4">
+            <div className="worldlabs-card rounded-3xl p-8 border border-white/10 space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <h3 className="text-sm font-bold text-white">Empirical Breakthroughs & Benchmark Metrics</h3>
-                <span className="text-[10px] text-indigo-300 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                  Verified Evidence
+                <div>
+                  <h3 className="text-base font-bold text-white tracking-tight">Empirical Breakthroughs & Benchmarks</h3>
+                  <p className="text-xs text-slate-400">Verifiable contributions backed by page-level evidence</p>
+                </div>
+                <span className="text-[10px] text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 font-bold">
+                  Verified Findings
                 </span>
               </div>
 
               {summary?.key_findings ? (
                 <div className="space-y-3">
                   {summary.key_findings.map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-semibold text-emerald-400">Finding #{idx + 1}</span>
-                        <span className="text-slate-500 font-mono">[Page {idx + 1}, Section 3]</span>
+                    <div key={idx} className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-emerald-400">Finding #{idx + 1}</span>
+                        <span className="text-slate-500 font-mono text-[11px]">[Provenance: Section 3 & 4]</span>
                       </div>
-                      <p className="text-xs text-slate-200 leading-relaxed">{item}</p>
+                      <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">{item}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 py-6 text-center">
-                  Generate the 5-point summary from the Executive Summary tab to inspect key findings.
-                </p>
+                <EmptyState
+                  title="Breakthroughs Not Extracted"
+                  description="Generate the 5-point scientific summary to extract experimental breakthroughs."
+                  actionLabel="Generate Summary"
+                  onAction={handleGenerateSummary}
+                />
               )}
             </div>
           )}
 
-          {/* TAB 3: METHODOLOGY & ARCHITECTURE */}
+          {/* TAB 4: METHODOLOGY & DATASETS */}
           {activeTab === 'methodology' && (
-            <div className="worldlabs-card rounded-2xl p-6 border border-white/10 space-y-4">
+            <div className="worldlabs-card rounded-3xl p-8 border border-white/10 space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <h3 className="text-sm font-bold text-white">Methodological Blueprint & Evaluation Regimes</h3>
-                <span className="text-[10px] text-amber-300 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                <div>
+                  <h3 className="text-base font-bold text-white tracking-tight">Methodological Framework</h3>
+                  <p className="text-xs text-slate-400">Experimental design, datasets, and baseline comparisons</p>
+                </div>
+                <span className="text-[10px] text-amber-300 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 font-bold">
                   System Architecture
                 </span>
               </div>
 
               {summary?.methodology ? (
-                <div className="p-5 rounded-xl bg-black/40 border border-white/5 space-y-3">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400">
-                    <span className="font-medium text-amber-400">Proposed Algorithmic Formulation</span>
-                    <span className="font-mono">[Section 2 & 4]</span>
+                <div className="p-6 rounded-2xl bg-black/40 border border-white/5 space-y-3">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span className="font-medium text-amber-400">Mathematical & Algorithmic Formulation</span>
+                    <span className="font-mono text-[11px]">[Section 2 & 4]</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">
                     {summary.methodology}
                   </p>
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 py-6 text-center">
-                  No methodology extracted yet. Run the scientific summary module above.
-                </p>
+                <EmptyState
+                  title="Methodology Not Extracted"
+                  description="Run the scientific analysis module to extract experimental methodology."
+                  actionLabel="Generate Summary"
+                  onAction={handleGenerateSummary}
+                />
               )}
             </div>
           )}
 
-          {/* TAB 4: LIMITATIONS & RESEARCH GAPS */}
+          {/* TAB 5: LIMITATIONS & RESEARCH GAPS */}
           {activeTab === 'gaps' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="worldlabs-card rounded-2xl p-6 border border-rose-500/20 space-y-4">
+              <div className="worldlabs-card rounded-3xl p-6 border border-rose-500/20 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <span className="text-rose-400">⚠️</span>
+                  <span className="text-rose-400 font-bold">⚠️</span>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-rose-300">
                     Acknowledged Limitations
                   </h3>
                 </div>
                 {summary?.limitations && summary.limitations.length > 0 ? (
-                  <ul className="space-y-2.5 text-xs text-slate-300">
+                  <ul className="space-y-3 text-xs text-slate-300">
                     {summary.limitations.map((lim, idx) => (
-                      <li key={idx} className="p-3 rounded-xl bg-black/40 border border-white/5 flex items-start gap-2.5">
-                        <span className="text-rose-400 font-bold">•</span>
-                        <div className="space-y-1">
-                          <span className="leading-relaxed block">{lim}</span>
-                          <span className="text-[10px] text-slate-500 font-mono">[Provenance: Discussion & Limitations]</span>
-                        </div>
+                      <li key={idx} className="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                        <span className="leading-relaxed block text-slate-200">{lim}</span>
+                        <span className="text-[10px] text-slate-500 font-mono block">[Provenance: Discussion & Limits]</span>
                       </li>
                     ))}
                   </ul>
@@ -372,22 +429,19 @@ export default function PaperDetailPage() {
                 )}
               </div>
 
-              <div className="worldlabs-card rounded-2xl p-6 border border-sky-500/20 space-y-4">
+              <div className="worldlabs-card rounded-3xl p-6 border border-sky-500/20 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <span className="text-sky-400">💡</span>
+                  <span className="text-sky-400 font-bold">💡</span>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-sky-300">
-                    Future Research Opportunities
+                    Candidate Research Gaps
                   </h3>
                 </div>
                 {summary?.future_scope && summary.future_scope.length > 0 ? (
-                  <ul className="space-y-2.5 text-xs text-slate-300">
+                  <ul className="space-y-3 text-xs text-slate-300">
                     {summary.future_scope.map((f, idx) => (
-                      <li key={idx} className="p-3 rounded-xl bg-black/40 border border-white/5 flex items-start gap-2.5">
-                        <span className="text-sky-400 font-bold">•</span>
-                        <div className="space-y-1">
-                          <span className="leading-relaxed block">{f}</span>
-                          <span className="text-[10px] text-slate-500 font-mono">[Provenance: Future Work]</span>
-                        </div>
+                      <li key={idx} className="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                        <span className="leading-relaxed block text-slate-200">{f}</span>
+                        <span className="text-[10px] text-slate-500 font-mono block">[Provenance: Future Work]</span>
                       </li>
                     ))}
                   </ul>
@@ -398,18 +452,18 @@ export default function PaperDetailPage() {
             </div>
           )}
 
-          {/* TAB 5: VECTOR CHUNKS & PROVENANCE EVIDENCE */}
-          {activeTab === 'chunks' && (
+          {/* TAB 6: VECTOR CHUNKS & PAGE EVIDENCE */}
+          {activeTab === 'evidence' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-white">ChromaDB Chunk Representations</h3>
+                  <h3 className="text-base font-bold text-white tracking-tight">ChromaDB Chunk Representations</h3>
                   <p className="text-xs text-slate-400">
-                    Each chunk represents an embedded vector segment used for semantic retrieval and Grounded RAG.
+                    Exact vectorized chunks indexed with cosine similarity for zero-hallucination Grounded RAG.
                   </p>
                 </div>
                 <span className="text-xs font-mono text-slate-400">
-                  Total: {chunks.length} Chunks
+                  Total: {chunks.length} Vectors
                 </span>
               </div>
 
@@ -420,7 +474,7 @@ export default function PaperDetailPage() {
                     className="worldlabs-card rounded-2xl p-5 border border-white/10 space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/5">
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-2">
                         <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/25">
                           Chunk #{chk.chunk_index + 1}
                         </span>
@@ -435,14 +489,14 @@ export default function PaperDetailPage() {
                       </div>
                     </div>
 
-                    <p className="text-xs text-slate-300 font-mono leading-relaxed bg-black/50 p-4 rounded-xl border border-white/5">
-                      {chk.content}
+                    <p className="text-xs text-slate-200 font-mono leading-relaxed bg-black/50 p-4 rounded-xl border border-white/5">
+                      "{chk.content}"
                     </p>
 
                     <div className="flex items-center justify-end gap-2 pt-1">
                       <Link
                         href={`/chat?paper_id=${paper.id}&q=${encodeURIComponent(`Explain this section: "${chk.section_name}"`)}`}
-                        className="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium"
+                        className="text-xs text-indigo-400 hover:text-indigo-300 font-medium"
                       >
                         Ask Question on this Chunk →
                       </Link>
@@ -455,40 +509,74 @@ export default function PaperDetailPage() {
         </div>
       </div>
 
-      {/* BibTeX Export Modal */}
-      {showBibtexModal && (
+      {/* Multi-Format Citation Export Modal */}
+      {showCitationModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
-          <div className="worldlabs-card rounded-3xl border border-white/15 max-w-lg w-full p-6 shadow-2xl space-y-4">
+          <div className="worldlabs-card rounded-3xl border border-white/15 max-w-xl w-full p-8 shadow-2xl space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <h3 className="text-sm font-bold text-white">Export BibTeX Citation</h3>
+              <h3 className="text-base font-bold text-white">Export Academic Citation</h3>
               <button
-                onClick={() => setShowBibtexModal(false)}
+                onClick={() => setShowCitationModal(false)}
                 className="text-slate-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
 
-            <textarea
-              readOnly
-              value={bibtexSnippet}
-              rows={8}
-              className="w-full p-4 rounded-xl bg-black/60 border border-white/10 text-xs text-slate-300 font-mono focus:outline-none"
-            />
+            <div className="space-y-4">
+              {/* BibTeX */}
+              <div className="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">BibTeX Format</span>
+                  <button
+                    onClick={() => handleCopyCitation('bibtex')}
+                    className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    {copiedFormat === 'bibtex' ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : 'Copy BibTeX'}
+                  </button>
+                </div>
+                <pre className="text-[11px] text-slate-300 font-mono overflow-x-auto p-2 bg-black/40 rounded-lg">
+                  {getCitationText('bibtex')}
+                </pre>
+              </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-2">
-              <button
-                onClick={() => setShowBibtexModal(false)}
-                className="worldlabs-btn-secondary text-xs py-2 px-4"
-              >
+              {/* IEEE */}
+              <div className="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">IEEE Standard</span>
+                  <button
+                    onClick={() => handleCopyCitation('ieee')}
+                    className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    {copiedFormat === 'ieee' ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : 'Copy IEEE'}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-300 font-serif leading-relaxed">
+                  {getCitationText('ieee')}
+                </p>
+              </div>
+
+              {/* APA */}
+              <div className="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">APA 7th Edition</span>
+                  <button
+                    onClick={() => handleCopyCitation('apa')}
+                    className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    {copiedFormat === 'apa' ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : 'Copy APA'}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-300 font-serif leading-relaxed">
+                  {getCitationText('apa')}
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button variant="secondary" size="sm" onClick={() => setShowCitationModal(false)}>
                 Close
-              </button>
-              <button
-                onClick={handleCopyBibtex}
-                className="worldlabs-btn-primary text-xs py-2 px-5 font-semibold"
-              >
-                {copiedBibtex ? '✓ Copied to Clipboard' : 'Copy BibTeX'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

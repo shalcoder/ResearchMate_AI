@@ -344,7 +344,7 @@ export default function Home() {
 
         {/* Subtitle */}
         <p className="text-base sm:text-lg text-zinc-400 max-w-2xl font-normal leading-relaxed mb-10">
-          Upload complex academic PDFs, extract structured methodologies, chat with page-cited RAG agents, and synthesize comparative matrices across literature in seconds.
+          Upload papers, understand them with grounded AI, discover related literature, compare research, identify gaps, and organize your work in one workspace.
         </p>
 
         {/* CTA Button Group */}
@@ -353,7 +353,7 @@ export default function Home() {
             href={isAuthenticated && user ? `/dashboard/${user.role}` : '/login'}
             className="worldlabs-btn-primary px-8 py-3.5 text-sm"
           >
-            <span>Enter Research Workspace</span>
+            <span>Start Researching</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
 
@@ -361,7 +361,7 @@ export default function Home() {
             href="#workflow"
             className="worldlabs-btn-secondary px-8 py-3.5 text-sm"
           >
-            <span>Explore 5-Step Workflow</span>
+            <span>Explore Workspace</span>
           </a>
         </div>
 

@@ -192,7 +192,7 @@ export default function ChatPage() {
                   </div>
                 </div>
               ) : (
-                messages.map((m) => (
+                messages.map((m, idx) => (
                   <div
                     key={m.id}
                     className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
@@ -245,6 +245,30 @@ export default function ChatPage() {
                             >
                               Regenerate
                             </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Dynamic Follow-up Prompt Chips for latest assistant message */}
+                      {m.role === 'assistant' && idx === messages.length - 1 && !isSending && (
+                        <div className="pt-2 mt-1 border-t border-white/5 space-y-1.5">
+                          <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">
+                            Suggested Inquiries:
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[
+                              'What datasets were used to validate this?',
+                              'What are the acknowledged computational bottlenecks?',
+                              'How does this compare to prior state-of-the-art?',
+                            ].map((followUp, fIdx) => (
+                              <button
+                                key={fIdx}
+                                onClick={() => executeChatQuery(followUp)}
+                                className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5 transition-all text-left"
+                              >
+                                {followUp} →
+                              </button>
+                            ))}
                           </div>
                         </div>
                       )}

@@ -52,6 +52,23 @@ export const RegisterForm: React.FC = () => {
 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Password strength calculation
+  const getPasswordStrength = (pwd: string) => {
+    if (!pwd) return { label: 'Empty', color: 'bg-zinc-700', percent: 0 };
+    let score = 0;
+    if (pwd.length >= 8) score += 35;
+    if (pwd.length >= 12) score += 20;
+    if (/[A-Z]/.test(pwd)) score += 15;
+    if (/[0-9]/.test(pwd)) score += 15;
+    if (/[^A-Za-z0-9]/.test(pwd)) score += 15;
+    if (score < 40) return { label: 'Weak', color: 'bg-rose-500', percent: score };
+    if (score < 75) return { label: 'Good', color: 'bg-amber-500', percent: score };
+    return { label: 'Strong', color: 'bg-emerald-500', percent: score };
+  };
+
+  const strength = getPasswordStrength(formData.password);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,25 +199,49 @@ export const RegisterForm: React.FC = () => {
           {/* Passwords */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-zinc-300">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[10px] text-zinc-400 hover:text-white"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 chars"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
               />
+              {formData.password && (
+                <div className="mt-1.5 space-y-1">
+                  <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${strength.color} transition-all duration-300`}
+                      style={{ width: `${strength.percent}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-zinc-400 block font-mono">
+                    Strength: <span className="font-semibold text-white">{strength.label}</span>
+                  </span>
+                </div>
+              )}
               {errors.password && <p className="text-[10px] text-rose-400 mt-1">{errors.password}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                Confirm Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-zinc-300">
+                  Confirm Password
+                </label>
+              </div>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Repeat password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}

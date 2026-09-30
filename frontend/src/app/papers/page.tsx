@@ -3,18 +3,23 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PaperCard } from '@/components/papers/PaperCard';
+import { PaperRow } from '@/components/papers/PaperRow';
 import { UploadModal } from '@/components/papers/UploadModal';
+import { SearchInput, EmptyState, Skeleton } from '@/components/ui';
 import { ResearchPaper } from '@/types';
 import { api } from '@/lib/api';
+import { LayoutGrid, List, RefreshCw, FileUp } from 'lucide-react';
 
 type FilterTab = 'all' | 'vector_ready' | 'needs_summary';
 type SortOption = 'recent' | 'title' | 'year' | 'chunks';
+type ViewMode = 'grid' | 'list';
 
 export default function PapersPage() {
   const [papers, setPapers] = useState<ResearchPaper[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [sortBy, setSortBy] = useState<SortOption>('recent');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -82,13 +87,13 @@ export default function PapersPage() {
               <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
                 Corpus Index
               </span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-500 font-mono">
                 {papers.length} Papers • {totalChunks} Chunks • {totalPages} Pages
               </span>
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Research Paper Library</h1>
             <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Autonomous literature repository. Manage vectorized chunks, inspect provenance citations, trigger 5-point scientific summaries, and launch cross-paper comparisons.
+              Autonomous scientific literature repository. Manage vectorized chunks, inspect provenance citations, trigger 5-point summaries, and contrast foundational models.
             </p>
           </div>
 
@@ -98,25 +103,24 @@ export default function PapersPage() {
               className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors"
               title="Refresh library"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              <RefreshCw className="w-4 h-4" />
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
               className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center gap-2 whitespace-nowrap"
             >
-              <span>+</span> Ingest Research Paper
+              <FileUp className="w-3.5 h-3.5" />
+              <span>Ingest Research Paper</span>
             </button>
           </div>
         </div>
 
-        {/* Filter Tabs & Search Controls */}
+        {/* Filter Tabs, Search & View Controls */}
         <div className="worldlabs-card rounded-2xl p-4 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           {/* Filter Tabs */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
             {[
-              { id: 'all', label: `All Papers (${papers.length})` },
+              { id: 'all', label: `All Literature (${papers.length})` },
               { id: 'vector_ready', label: `Vector Indexed (${papers.filter((p) => p.total_chunks > 0).length})` },
               { id: 'needs_summary', label: 'Unsummarized' },
             ].map((tab) => (
@@ -134,78 +138,80 @@ export default function PapersPage() {
             ))}
           </div>
 
-          {/* Search Bar & Sort Dropdown */}
+          {/* Search Bar, Sort & View Mode Switcher */}
           <div className="flex items-center gap-3">
-            <div className="relative flex-1 md:w-64">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">🔍</span>
-              <input
-                type="text"
+            <div className="w-full md:w-64">
+              <SearchInput
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onClear={() => setSearchQuery('')}
                 placeholder="Search title, author, keyword..."
-                className="w-full pl-8 pr-8 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
               />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
-                >
-                  ✕
-                </button>
-              )}
             </div>
 
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="bg-black/40 border border-white/10 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 cursor-pointer"
+              className="bg-black/40 border border-white/10 text-xs text-slate-300 rounded-2xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 cursor-pointer"
             >
               <option value="recent">Sort: Recently Ingested</option>
               <option value="title">Sort: Title (A-Z)</option>
               <option value="year">Sort: Publication Year</option>
               <option value="chunks">Sort: Chunks Count</option>
             </select>
+
+            {/* Grid vs List toggle */}
+            <div className="flex items-center p-1 rounded-xl bg-black/40 border border-white/10">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  viewMode === 'grid' ? 'bg-white/15 text-white' : 'text-slate-500 hover:text-slate-300'
+                }`}
+                title="Grid view"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  viewMode === 'list' ? 'bg-white/15 text-white' : 'text-slate-500 hover:text-slate-300'
+                }`}
+                title="List view"
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Papers Grid */}
+        {/* Papers Stream / Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-64 rounded-2xl bg-white/5 border border-white/5 animate-pulse" />
+              <Skeleton key={i} className="h-64" />
             ))}
           </div>
         ) : filteredAndSortedPapers.length === 0 ? (
-          <div className="worldlabs-card rounded-2xl p-12 text-center border border-white/10 max-w-lg mx-auto my-8">
-            <div className="w-12 h-12 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto mb-3 text-xl">
-              📄
-            </div>
-            <h3 className="text-sm font-bold text-white mb-1">No research papers match your criteria</h3>
-            <p className="text-xs text-slate-400 mb-5 leading-relaxed">
-              {searchQuery
-                ? `No papers found matching "${searchQuery}". Try a different keyword or reset filters.`
-                : 'Your literature library is empty. Upload your first PDF to extract vector embeddings.'}
-            </p>
-            {searchQuery ? (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="worldlabs-btn-secondary text-xs py-2 px-4"
-              >
-                Clear Search Query
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="worldlabs-btn-primary text-xs py-2 px-4"
-              >
-                Ingest Research Paper
-              </button>
-            )}
-          </div>
-        ) : (
+          <EmptyState
+            title="No research papers found"
+            description={
+              searchQuery
+                ? `No papers match the search query "${searchQuery}". Try a different keyword or reset filters.`
+                : 'Your literature library is empty. Upload your first PDF to extract semantic chunks.'
+            }
+            actionLabel={searchQuery ? 'Clear Search' : 'Ingest Research Paper'}
+            onAction={searchQuery ? () => setSearchQuery('') : () => setIsModalOpen(true)}
+          />
+        ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredAndSortedPapers.map((paper) => (
               <PaperCard key={paper.id} paper={paper} onDelete={handleDelete} />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredAndSortedPapers.map((paper) => (
+              <PaperRow key={paper.id} paper={paper} onDelete={handleDelete} />
             ))}
           </div>
         )}
