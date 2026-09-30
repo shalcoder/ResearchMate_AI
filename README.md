@@ -97,6 +97,9 @@ docker compose up --build -d
 
 # Check service health
 docker compose ps
+
+# Follow service logs
+docker compose logs -f
 ```
 - **Web Application**: `http://localhost:3000`
 - **FastAPI Documentation**: `http://localhost:8000/docs`
