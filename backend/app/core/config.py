@@ -9,7 +9,6 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
     DEBUG: bool = True  # Contributor B
-
     # Security & JWT
     SECRET_KEY: str = "super_secret_jwt_dev_key_for_researchmate_ai_2026_auth"
     ALGORITHM: str = "HS256"
