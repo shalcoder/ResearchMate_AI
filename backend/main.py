@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,18 +13,26 @@ async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine)
         print("Database schema successfully verified/initialized.")
+        if not os.environ.get("PYTEST_CURRENT_TEST") and settings.ENVIRONMENT.lower() not in ("test", "testing"):
+            try:
+                from seed_data import seed
+                seed()
+            except Exception as se:
+                print(f"Notice: Auto-seeding deferred or encountered: {se}")
     except Exception as e:
         print(f"Notice: Database initialization deferred or encountered: {e}")
     yield
 
 
+is_prod = settings.ENVIRONMENT.lower() == "production" and not settings.DEBUG
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Persistent AI-enabled academic research workspace and literature-review platform REST API.",
     version="1.0.0",
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    docs_url=f"{settings.API_V1_STR}/docs",
-    redoc_url=f"{settings.API_V1_STR}/redoc",
+    openapi_url=None if is_prod else f"{settings.API_V1_STR}/openapi.json",
+    docs_url=None if is_prod else f"{settings.API_V1_STR}/docs",
+    redoc_url=None if is_prod else f"{settings.API_V1_STR}/redoc",
     lifespan=lifespan,
 )
 
@@ -67,7 +76,6 @@ def root():
         "app": settings.PROJECT_NAME,
         "status": "online",
         "version": "1.0.0",
-        "api_docs": f"{settings.API_V1_STR}/docs",
     }
 
 

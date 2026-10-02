@@ -15,9 +15,19 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  ...(isGithubPages
+    ? {}
+    : {
+        async rewrites() {
+          const backendTarget = process.env.BACKEND_PROXY_URL || 'https://researchmate-backend-2zu6.onrender.com';
+          return [
+            {
+              source: '/api/v1/:path*',
+              destination: `${backendTarget}/api/v1/:path*`,
+            },
+          ];
+        },
+      }),
 };
 
 module.exports = nextConfig;

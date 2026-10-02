@@ -58,7 +58,7 @@ jobs:
           DEPLOY_TARGET: gh-pages
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
           # Set default backend URL or use repository secret if configured
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://researchmate-ai-backend.onrender.com' }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: |
           npm run build
 
