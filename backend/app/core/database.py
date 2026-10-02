@@ -3,10 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from app.core.config import settings
 
-# Normalize database URL (e.g. Render passes 'postgres://' which SQLAlchemy 2.0 requires as 'postgresql://')
-db_url = settings.DATABASE_URL
+# Normalize database URL to use psycopg2 explicitly
+db_url = settings.DATABASE_URL or "sqlite:///./researchmate.db"
 if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 # Engine configuration (supporting SQLite and PostgreSQL)
 connect_args = {}

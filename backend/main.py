@@ -28,7 +28,10 @@ app = FastAPI(
 )
 
 # Set up CORS middleware
-origins = [str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIGINS] if settings.BACKEND_CORS_ORIGINS else []
+raw_cors = settings.BACKEND_CORS_ORIGINS
+if isinstance(raw_cors, str):
+    raw_cors = [i.strip() for i in raw_cors.split(",") if i.strip()]
+origins = [str(origin).rstrip("/") for origin in (raw_cors or [])]
 is_wildcard = "*" in origins
 
 if is_wildcard:
