@@ -39,8 +39,9 @@ class ComparisonService:
 
         titles = [p["title"] for p in papers_data]
 
-        # Gemini structured comparison if enabled
-        if self.client:
+        # Gemini structured comparison via Harness Agent if configured
+        from app.services.gemini_harness import gemini_harness
+        if gemini_harness.is_configured():
             try:
                 summaries = []
                 for p in papers_data:
@@ -54,17 +55,16 @@ class ComparisonService:
 
                 prompt = (
                     "Compare the following research papers side-by-side. Return a strict JSON response with keys:\n"
-                    "- synthesis: A high-level 2-3 paragraph comparative overview.\n"
+                    "- synthesis: A high-level comparative overview paragraph.\n"
                     "- matrix: An array of comparison objects, each with 'aspect', 'paper_comparisons' (dict of title to summary), and 'winner_or_edge'.\n"
                     "- research_gaps: An array of 3-5 identified unsolved research questions or opportunities.\n\n"
                     f"Papers:\n{combined}"
                 )
-                response = self.client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=prompt,
-                )
-                clean_json = re.sub(r"^```(?:json)?\n|\n```$", "", response.text.strip()).strip()
-                return json.loads(clean_json)
+                raw_json = gemini_harness.generate_content(prompt, temperature=0.2)
+                clean_json = re.sub(r"^```(?:json)?\n|\n```$", "", raw_json.strip()).strip()
+                parsed = json.loads(clean_json)
+                if parsed and ("synthesis" in parsed or "matrix" in parsed):
+                    return parsed
             except Exception:
                 pass
 

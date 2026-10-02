@@ -41,34 +41,19 @@ class SummaryService:
             # First 5 chunks provides solid coverage of intro and methods
             context_text += "\nExcerpt Content:\n" + "\n".join(chunks[:6])
 
-        # Attempt Gemini generation if client configured
-        if self.client:
+        # Attempt Gemini Harness generation if configured
+        from app.services.gemini_harness import gemini_harness
+        if gemini_harness.is_configured():
             try:
-                prompt = (
-                    "You are an elite scientific research assistant. Summarize the following research paper "
-                    "into a strict JSON object with exactly these keys:\n"
-                    "- executive_summary: A concise 2-3 sentence overview of the core problem and breakthrough.\n"
-                    "- key_findings: List of 3-5 major quantitative or qualitative findings.\n"
-                    "- methodology: Paragraph describing the dataset, models, experiments, and technical setup.\n"
-                    "- limitations: List of 2-4 critical constraints or vulnerabilities identified.\n"
-                    "- future_scope: List of 2-4 directions for subsequent research.\n\n"
-                    f"Paper Content:\n{context_text[:8000]}"
-                )
-                response = self.client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=prompt,
-                )
-                raw_text = response.text.strip()
-                # Clean code fences if returned
-                clean_json = re.sub(r"^```(?:json)?\n|\n```$", "", raw_text).strip()
-                parsed = json.loads(clean_json)
-                return {
-                    "executive_summary": parsed.get("executive_summary", f"Research paper on {title}."),
-                    "key_findings": parsed.get("key_findings", []),
-                    "methodology": parsed.get("methodology", "Experimental academic methodology."),
-                    "limitations": parsed.get("limitations", ["Evaluated in controlled setting"]),
-                    "future_scope": parsed.get("future_scope", ["Cross-domain generalizability validation"]),
-                }
+                parsed = gemini_harness.run_paper_summary_agent(title, context_text)
+                if parsed and "executive_summary" in parsed:
+                    return {
+                        "executive_summary": parsed.get("executive_summary", f"Research paper on {title}."),
+                        "key_findings": parsed.get("key_findings", []),
+                        "methodology": parsed.get("methodology", "Experimental academic methodology."),
+                        "limitations": parsed.get("limitations", ["Evaluated in controlled setting"]),
+                        "future_scope": parsed.get("future_scope", ["Cross-domain generalizability validation"]),
+                    }
             except Exception:
                 pass
 

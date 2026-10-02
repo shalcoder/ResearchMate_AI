@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import admin, auth, chat, citations, compare, notes, papers, professor, projects, search, users
+from app.api.v1.endpoints import admin, agent, auth, chat, citations, compare, notes, papers, professor, projects, search, users
 
 api_router = APIRouter()
 
@@ -12,5 +12,6 @@ api_router.include_router(search.router, tags=["Semantic Search"])
 api_router.include_router(citations.router, tags=["Academic Citations Engine"])
 api_router.include_router(notes.router, tags=["Notes & Highlights"])
 api_router.include_router(projects.router, tags=["Collaborative Projects"])
+api_router.include_router(agent.router, tags=["Gemini Harness Agent"])
 api_router.include_router(professor.router, prefix="/professor", tags=["Professor Advisory"])
 api_router.include_router(admin.router, prefix="/admin", tags=["Admin Governance"])

@@ -123,8 +123,9 @@ function ChatContent() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-white/10">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
-                Grounded RAG 2.0
+              <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Gemini 2.5 Flash Harness Agent
               </span>
               <span className="text-xs text-slate-400">Verifiable Academic Literature Citations</span>
             </div>

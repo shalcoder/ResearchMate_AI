@@ -71,36 +71,21 @@ class RAGService:
 
         context_str = "\n\n".join(context_blocks)
 
-        # 3. Call Gemini if available
-        if self.client:
+        # 3. Call Gemini Harness Agent if available
+        from app.services.gemini_harness import gemini_harness
+        if gemini_harness.is_configured():
             try:
-                history_prompt = ""
-                if chat_history:
-                    history_lines = [f"{m['role'].capitalize()}: {m['content']}" for m in chat_history[-4:]]
-                    history_prompt = "\nChat History:\n" + "\n".join(history_lines) + "\n"
-
-                system_prompt = (
-                    "You are ResearchMate AI, an expert academic peer-review and paper research assistant. "
-                    "Answer the user's question accurately and strictly based on the provided document excerpts. "
-                    "Whenever citing a claim or metric, include the source citation mark like [1], [2] corresponding "
-                    "to the provided excerpts. Do NOT hallucinate information not supported by the excerpts."
+                gemini_answer = gemini_harness.run_grounded_rag_agent(
+                    query=query,
+                    context_excerpts=context_str,
+                    chat_history=chat_history,
                 )
-
-                user_prompt = (
-                    f"{system_prompt}\n{history_prompt}\n"
-                    f"Document Excerpts:\n{context_str}\n\n"
-                    f"User Question: {query}\nAnswer:"
-                )
-
-                response = self.client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=user_prompt,
-                )
-                return {
-                    "answer": response.text.strip(),
-                    "citations": citations,
-                    "retrieved_chunks": len(retrieved),
-                }
+                if gemini_answer:
+                    return {
+                        "answer": gemini_answer,
+                        "citations": citations,
+                        "retrieved_chunks": len(retrieved),
+                    }
             except Exception:
                 pass
 

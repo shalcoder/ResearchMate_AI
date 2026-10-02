@@ -40,10 +40,9 @@ class Settings(BaseSettings):
 
     # Storage & AI
     UPLOAD_DIR: str = "./uploads"
-    CHROMA_HOST: str = "localhost"
-    CHROMA_PORT: int = 8000
     CHROMA_PERSIST_DIR: str = "./chroma_db"
-    GEMINI_API_KEY: str = "mock-gemini-api-key-for-dev"
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"
     DEFAULT_EMBEDDING_MODEL: str = "models/text-embedding-004"
 
     model_config = SettingsConfigDict(
