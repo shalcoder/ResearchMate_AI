@@ -16,19 +16,27 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
 
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = [
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, str) and v.startswith("["):
-            return json.loads(v)
-        return v
+    def assemble_cors_origins(cls, v: Any) -> List[str]:
+        if isinstance(v, str):
+            clean = v.strip()
+            if not clean:
+                return []
+            if clean.startswith("[") and clean.endswith("]"):
+                try:
+                    return json.loads(clean)
+                except Exception:
+                    pass
+            return [i.strip().strip("'\"") for i in clean.split(",") if i.strip()]
+        elif isinstance(v, (list, tuple)):
+            return [str(i).strip() for i in v]
+        return []
 
     # Database
     DATABASE_URL: str = "sqlite:///./researchmate.db"
