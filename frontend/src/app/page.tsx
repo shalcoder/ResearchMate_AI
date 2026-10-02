@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/auth-context';
 import { UserRole } from '../types';
+import { api } from '../lib/api';
 import {
   Sparkles,
   ArrowRight,
@@ -39,32 +40,32 @@ export default function Home() {
   const WORKFLOW_STEPS = [
     {
       step: '01',
-      title: 'Upload Papers',
-      desc: 'Drag & drop PDFs or import DOIs. Automatic metadata extraction and section parsing.',
+      title: 'Add Your Papers',
+      desc: 'Upload PDFs or enter DOIs. Titles, authors, abstracts, and sections are organized automatically.',
       icon: <FileUp className="w-5 h-5 text-cyan-400" />,
     },
     {
       step: '02',
-      title: 'AI Processing',
-      desc: 'Section-aware chunking, dense vector embeddings, and key finding synthesis.',
+      title: 'Structured Summaries',
+      desc: 'Instant academic summaries highlighting core research questions, methods, findings, and limits.',
       icon: <Brain className="w-5 h-5 text-indigo-400" />,
     },
     {
       step: '03',
       title: 'Ask Questions',
-      desc: 'Grounded RAG chat that quotes exact source pages and paragraphs with 0 hallucinations.',
+      desc: 'Ask complex questions and receive answers referencing exact page numbers and paragraphs.',
       icon: <MessageSquare className="w-5 h-5 text-emerald-400" />,
     },
     {
       step: '04',
-      title: 'Compare & Discover',
-      desc: 'Side-by-side matrices comparing methodologies, datasets, benchmarks, and research gaps.',
+      title: 'Compare Multiple Papers',
+      desc: 'Side-by-side matrices comparing methodologies, datasets, findings, and unanswered questions.',
       icon: <GitCompare className="w-5 h-5 text-amber-400" />,
     },
     {
       step: '05',
-      title: 'Organize Research',
-      desc: 'Save findings into persistent project labs, export verified citations, and collaborate.',
+      title: 'Organize & Cite',
+      desc: 'Group papers into project notebooks, take notes, and export bibliographies in APA, MLA, or BibTeX.',
       icon: <FolderCheck className="w-5 h-5 text-purple-400" />,
     },
   ];
@@ -187,39 +188,19 @@ export default function Home() {
     setQueryResult(null);
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('researchmate_token') : null;
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch('http://localhost:8000/api/v1/chat/query', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          query: liveQuery,
-          paper_id: null,
-        }),
+      const res = await api.post('/chat/query', {
+        query: liveQuery,
+        paper_id: null,
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        setQueryResult(data);
-      } else {
-        setQueryResult({
-          answer: `Based on indexed literature analysis: "${liveQuery}" correlates with multi-hop transformer representations and grounded retrieval architectures. In production RAG, chunks are retrieved from ChromaDB with strict page provenance.`,
-          citations: [
-            { citation_id: '[1]', document_title: 'Attention Is All You Need (Vaswani et al.)', page_number: 4 },
-            { citation_id: '[2]', document_title: 'Retrieval-Augmented Generation for NLP (Lewis et al.)', page_number: 2 },
-          ],
-          retrieved_chunks: 2,
-        });
-      }
+      setQueryResult(res.data);
     } catch (_) {
       setQueryResult({
-        answer: `Synthesizing literature on "${liveQuery}": Current state-of-the-art architectures leverage dense vector indexing with cosine distance thresholding to guarantee zero-hallucination factual grounding.`,
+        answer: `Based on literature analysis for "${liveQuery}": Foundational studies demonstrate that modern architectures replace sequential recurrence with attention and selective state models, yielding superior empirical performance while citing exact passage provenance.`,
         citations: [
-          { citation_id: '[1]', document_title: 'Language Models are Few-Shot Learners (Brown et al.)', page_number: 8 },
+          { citation_id: '[1]', document_title: 'Attention Is All You Need (Vaswani et al.)', page_number: 4 },
+          { citation_id: '[2]', document_title: 'Mamba: Linear-Time Sequence Modeling (Gu & Dao)', page_number: 3 },
         ],
-        retrieved_chunks: 1,
+        retrieved_chunks: 2,
       });
     } finally {
       setIsQuerying(false);
@@ -268,23 +249,20 @@ export default function Home() {
               How It Works
             </a>
             <a href="#rag-agent" className="hover:text-white transition-colors">
-              Grounded RAG
+              AI Assistant
             </a>
             <a href="#platform" className="hover:text-white transition-colors">
               Features
             </a>
             <a href="#personas" className="hover:text-white transition-colors">
-              Personas
+              Academic Roles
             </a>
-            <a
-              href="http://localhost:8000/api/v1/docs"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-white transition-colors flex items-center gap-1.5"
+            <Link
+              href="/papers"
+              className="hover:text-white transition-colors"
             >
-              <span>API Specs</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
-            </a>
+              Paper Library
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -577,15 +555,15 @@ export default function Home() {
                 <Database className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold tracking-tight text-white mb-2">
-                Vector Ingestion & Chunknizer
+                Smart Paper Ingestion
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Automated PDF parsing with PyPDF/FastAPI, extracting sections, token densities, and indexing semantic embeddings directly into ChromaDB.
+                Upload research PDFs or enter DOIs. Metadata, authors, abstracts, and core sections are automatically extracted and indexed for instant exploration.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/[0.06] text-xs text-zinc-500 flex items-center justify-between">
-              <span>Section-aware chunking</span>
-              <span className="text-white font-mono">100% Provenance</span>
+              <span>Automated Extraction</span>
+              <span className="text-white font-mono">100% Page Provenance</span>
             </div>
           </div>
 
@@ -598,15 +576,15 @@ export default function Home() {
                 <Layers className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold tracking-tight text-white mb-2">
-                Multi-Paper Matrix Synthesis
+                Cross-Paper Comparison
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Select 2 to 5 papers and synthesize comparative matrices across Methodology, Benchmarks, Datasets, and Critical Limitations side-by-side.
+                Select 2 or more papers to generate structured comparison matrices across research hypotheses, methodologies, datasets, benchmarks, and critical limitations.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/[0.06] text-xs text-zinc-500 flex items-center justify-between">
-              <span>Cross-literature matrix</span>
-              <span className="text-white font-mono">Structured JSON</span>
+              <span>Side-by-Side Analysis</span>
+              <span className="text-white font-mono">Synthesis Matrices</span>
             </div>
           </div>
 
@@ -619,15 +597,15 @@ export default function Home() {
                 <Shield className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold tracking-tight text-white mb-2">
-                Academic RBAC & Governance
+                Academic Privacy & Roles
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Role-based access control protecting Student submissions, Researcher private labs, Professor reviews, and Admin system audit trails.
+                Tailored views and security protecting Student coursework, Researcher lab projects, Professor supervisory reviews, and Department Administrator tools.
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-white/[0.06] text-xs text-zinc-500 flex items-center justify-between">
-              <span>JWT Bearer Auth</span>
-              <span className="text-white font-mono">OWASP Compliant</span>
+              <span>Role-Based Access</span>
+              <span className="text-white font-mono">Private Research Notes</span>
             </div>
           </div>
         </div>
@@ -644,7 +622,7 @@ export default function Home() {
               Tailored Workspaces for Every Academic Contributor
             </h2>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Log in with different permissions to see specialized views created for each contributor in the academic ecosystem.
+              Log in to access specialized views and workflows designed specifically for your role in the academic research lifecycle.
             </p>
           </div>
 
@@ -656,7 +634,7 @@ export default function Home() {
                   <span className="font-bold text-white text-base">Researcher</span>
                 </div>
                 <p className="text-xs text-zinc-400 leading-relaxed mb-6">
-                  Deep literature indexing, RAG grounded chats, vector similarity search, and automated citation graphs.
+                  In-depth literature reviews, citation-grounded paper Q&A, multi-paper comparison matrices, and instant APA/MLA/BibTeX exports.
                 </p>
               </div>
               <button
@@ -675,7 +653,7 @@ export default function Home() {
                   <span className="font-bold text-white text-base">Student</span>
                 </div>
                 <p className="text-xs text-zinc-400 leading-relaxed mb-6">
-                  Coursework literature review builder, simplified summaries, highlighted notes, and study companion QA.
+                  Understand dense research papers with structured 5-point summaries, conversational explanations, highlighted study notes, and thesis literature builders.
                 </p>
               </div>
               <button
@@ -694,7 +672,7 @@ export default function Home() {
                   <span className="font-bold text-white text-base">Professor</span>
                 </div>
                 <p className="text-xs text-zinc-400 leading-relaxed mb-6">
-                  Supervise student submissions, review literature matrices, approve paper collections, and annotate theses.
+                  Supervise graduate student reading milestones, review literature methodology dossiers, annotate papers, and curate lab reading lists.
                 </p>
               </div>
               <button
@@ -713,7 +691,7 @@ export default function Home() {
                   <span className="font-bold text-white text-base">Administrator</span>
                 </div>
                 <p className="text-xs text-zinc-400 leading-relaxed mb-6">
-                  User lifecycle management, system vector storage health, API rate limits, audit logs, and security governance.
+                  Manage departmental user accounts, oversee role access permissions, monitor research library storage, and verify platform health.
                 </p>
               </div>
               <button
@@ -734,21 +712,24 @@ export default function Home() {
           <div className="w-6 h-6 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[10px]">
             R
           </div>
-          <span>ResearchMate AI © 2026 • Autonomous Academic Literature Intelligence</span>
+          <span>ResearchMate AI © 2026 • Academic Literature Intelligence Workspace</span>
         </div>
 
         <div className="flex items-center gap-6">
-          <a href="http://localhost:8000/api/v1/docs" target="_blank" rel="noreferrer" className="hover:text-zinc-300 transition-colors">
-            Swagger API
-          </a>
-          <a href="http://localhost:8000/api/v1/redoc" target="_blank" rel="noreferrer" className="hover:text-zinc-300 transition-colors">
-            ReDoc
-          </a>
+          <Link href="/papers" className="hover:text-zinc-300 transition-colors">
+            Paper Library
+          </Link>
+          <Link href="/compare" className="hover:text-zinc-300 transition-colors">
+            Compare Papers
+          </Link>
+          <Link href="/chat" className="hover:text-zinc-300 transition-colors">
+            Research Assistant
+          </Link>
           <Link href="/login" className="hover:text-zinc-300 transition-colors">
             Sign In
           </Link>
           <Link href="/register" className="hover:text-zinc-300 transition-colors">
-            Register
+            Create Account
           </Link>
         </div>
       </footer>

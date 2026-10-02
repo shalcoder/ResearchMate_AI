@@ -156,7 +156,7 @@ export default function PaperDetailClient() {
                   </span>
                 )}
                 <span className="text-xs text-slate-500 font-mono">
-                  • {paper.total_pages} Pages • {chunks.length} Vectors
+                  • {paper.total_pages} Pages • {chunks.length} Sections
                 </span>
               </div>
 
@@ -185,14 +185,14 @@ export default function PaperDetailClient() {
                 className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20"
               >
                 <MessageSquare className="w-4 h-4" />
-                <span>Ask Paper (RAG)</span>
+                <span>Ask Paper (Q&A)</span>
               </Link>
               <Link
                 href={`/compare?target=${paper.id}`}
                 className="worldlabs-btn-secondary text-xs py-2.5 px-4 font-medium flex items-center justify-center gap-2"
               >
                 <Columns className="w-4 h-4" />
-                <span>Compare Model</span>
+                <span>Compare Paper</span>
               </Link>
               <button
                 onClick={() => setShowCitationModal(true)}
@@ -209,11 +209,11 @@ export default function PaperDetailClient() {
         <div className="worldlabs-card rounded-2xl p-1.5 border border-white/10 flex items-center gap-1 overflow-x-auto">
           {[
             { id: 'overview', label: 'Paper Overview' },
-            { id: 'summary', label: 'AI Structured Summary' },
-            { id: 'findings', label: 'Key Breakthroughs' },
-            { id: 'methodology', label: 'Methodology & Datasets' },
-            { id: 'gaps', label: 'Research Gaps & Limits' },
-            { id: 'evidence', label: `Vector Chunks (${chunks.length})` },
+            { id: 'summary', label: 'Executive Summary' },
+            { id: 'findings', label: 'Key Findings' },
+            { id: 'methodology', label: 'Methodology & Data' },
+            { id: 'gaps', label: 'Limitations & Future Scope' },
+            { id: 'evidence', label: `Source Sections (${chunks.length})` },
           ].map((tab) => (
             <button
               key={tab.id}

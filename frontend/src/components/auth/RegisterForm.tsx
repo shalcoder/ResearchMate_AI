@@ -19,20 +19,26 @@ const ROLES: { role: UserRole; title: string; desc: string; icon: React.ReactNod
   {
     role: 'researcher',
     title: 'Researcher',
-    desc: 'Semantic RAG, deep cross-paper synthesis & gap analysis',
+    desc: 'Literature reviews, paper synthesis, comparisons & citation exports',
     icon: <Microscope className="w-4 h-4 text-cyan-400" />,
   },
   {
     role: 'student',
     title: 'Student',
-    desc: 'Coursework literature reviews, cited QA & study summaries',
+    desc: 'Coursework study guides, simplified summaries & paper Q&A',
     icon: <GraduationCap className="w-4 h-4 text-emerald-400" />,
   },
   {
     role: 'professor',
     title: 'Professor',
-    desc: 'Student feedback, curated collections & advisor oversight',
+    desc: 'Supervising student reading lists, advisory & project collections',
     icon: <BookOpen className="w-4 h-4 text-amber-400" />,
+  },
+  {
+    role: 'admin',
+    title: 'Administrator',
+    desc: 'Department accounts, access permissions & institutional overview',
+    icon: <Shield className="w-4 h-4 text-purple-400" />,
   },
 ];
 

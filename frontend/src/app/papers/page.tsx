@@ -85,15 +85,15 @@ export default function PapersPage() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
-                Corpus Index
+                Paper Library
               </span>
               <span className="text-xs text-slate-500 font-mono">
-                {papers.length} Papers • {totalChunks} Chunks • {totalPages} Pages
+                {papers.length} Papers • {totalChunks} Sections • {totalPages} Pages
               </span>
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Research Paper Library</h1>
             <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Autonomous scientific literature repository. Manage vectorized chunks, inspect provenance citations, trigger 5-point summaries, and contrast foundational models.
+              Your academic literature collection. Read AI summaries, explore key sections, verify citations, and compare research findings.
             </p>
           </div>
 
@@ -110,7 +110,7 @@ export default function PapersPage() {
               className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center gap-2 whitespace-nowrap"
             >
               <FileUp className="w-3.5 h-3.5" />
-              <span>Ingest Research Paper</span>
+              <span>+ Upload Paper</span>
             </button>
           </div>
         </div>
@@ -120,9 +120,9 @@ export default function PapersPage() {
           {/* Filter Tabs */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
             {[
-              { id: 'all', label: `All Literature (${papers.length})` },
-              { id: 'vector_ready', label: `Vector Indexed (${papers.filter((p) => p.total_chunks > 0).length})` },
-              { id: 'needs_summary', label: 'Unsummarized' },
+              { id: 'all', label: `All Papers (${papers.length})` },
+              { id: 'vector_ready', label: `Ready for Q&A (${papers.filter((p) => p.total_chunks > 0).length})` },
+              { id: 'needs_summary', label: 'Needs Summary' },
             ].map((tab) => (
               <button
                 key={tab.id}

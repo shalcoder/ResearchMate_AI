@@ -62,17 +62,17 @@ export default function ResearcherDashboardPage() {
               <div className="flex items-center gap-2.5 flex-wrap">
                 <span className="worldlabs-pill text-[10px] tracking-wider text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                  Autonomous Academic Literature Workspace
+                  Academic Literature Workspace
                 </span>
                 <span className="text-xs text-slate-400 font-medium">
-                  {user?.institution || 'Academic Institute'} • {user?.department || 'Advanced AI Systems'}
+                  {user?.institution || 'Academic Institute'} • {user?.department || 'Department of Research'}
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                 {greeting}, {user?.name || 'Researcher'} 🔬
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Continue your literature synthesis. Your workspace has indexed foundational models with verified chunk citations, semantic similarity projections, and automated research gap discovery.
+                Continue your literature review. Your library contains research papers with verified page citations, structured summaries, and cross-paper comparison tools.
               </p>
             </div>
 
@@ -82,7 +82,7 @@ export default function ResearcherDashboardPage() {
                 onClick={() => setIsUploadOpen(true)}
                 className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center gap-2"
               >
-                <span>+</span> Ingest Research Paper
+                <span>+</span> Upload Paper
               </button>
               <Link
                 href="/compare"
@@ -94,7 +94,7 @@ export default function ResearcherDashboardPage() {
                 href="/chat"
                 className="worldlabs-btn-secondary text-xs py-2.5 px-4 font-medium flex items-center gap-2"
               >
-                <span>💬</span> Grounded RAG Chat
+                <span>💬</span> Ask Assistant
               </Link>
             </div>
           </div>
@@ -104,40 +104,40 @@ export default function ResearcherDashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Literature Ingested</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Live</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Papers in Library</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active</span>
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">{papers.length}</div>
             <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-              <span className="text-emerald-400">✓</span> Full-text parsed & OCR verified
+              <span className="text-emerald-400">✓</span> Full text & citations ready
             </p>
           </div>
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">ChromaDB Vectors</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/20">Indexed</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Indexed Sections</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/20">Searchable</span>
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">{totalChunks}</div>
             <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-              <span className="text-sky-400">●</span> 384-dim semantic embeddings
+              <span className="text-sky-400">●</span> Searchable paragraphs & pages
             </p>
           </div>
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Collaborative Labs</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Research Projects</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Shared</span>
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">{projects.length}</div>
             <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-              <span className="text-indigo-400">★</span> Pinned literature collections
+              <span className="text-indigo-400">★</span> Pinned project notebooks
             </p>
           </div>
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Gap Signals</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Open Research Gaps</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20">Extracted</span>
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">8</div>

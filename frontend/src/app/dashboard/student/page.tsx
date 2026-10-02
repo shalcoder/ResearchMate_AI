@@ -35,7 +35,7 @@ export default function StudentDashboardPage() {
                 Welcome back, {user?.name.split(' ')[0]} 👋
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Parse assigned literature, generate 5-point summaries, ask RAG-grounded questions, and export verified academic citations.
+                Read assigned papers with simplified summaries, ask interactive questions with exact page references, and export citations for your coursework.
               </p>
             </div>
 
@@ -44,7 +44,7 @@ export default function StudentDashboardPage() {
                 onClick={() => setIsUploadOpen(true)}
                 className="worldlabs-btn-primary text-xs py-2.5 px-5 font-semibold flex items-center gap-2 whitespace-nowrap"
               >
-                <span>+</span> Upload Literature
+                <span>+</span> Upload Paper
               </button>
             </div>
           </div>
@@ -63,10 +63,10 @@ export default function StudentDashboardPage() {
               </span>
             </div>
             <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
-              Paper Summaries
+              Study Guides & Summaries
             </h4>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Extract problem, methodology, findings, and limits in 1-click.
+              Read key hypotheses, methods, findings, and limits in plain language.
             </p>
           </Link>
 
@@ -77,14 +77,14 @@ export default function StudentDashboardPage() {
             <div className="flex items-center justify-between">
               <span className="text-xl">💬</span>
               <span className="text-[10px] text-indigo-300 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10">
-                RAG 2.0
+                Verified
               </span>
             </div>
             <h4 className="text-xs font-bold text-white group-hover:text-indigo-300 transition-colors">
-              Grounded Literature Q&A
+              Ask the Paper (Q&A)
             </h4>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Query papers with page citations and zero hallucination.
+              Ask questions about difficult concepts and see exact page quotes.
             </p>
           </Link>
 
@@ -99,10 +99,10 @@ export default function StudentDashboardPage() {
               </span>
             </div>
             <h4 className="text-xs font-bold text-white group-hover:text-sky-300 transition-colors">
-              Model Contrasts
+              Compare 2 Papers
             </h4>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Side-by-side matrices comparing algorithms and architectures.
+              See side-by-side differences in methodology, results, and conclusions.
             </p>
           </Link>
 

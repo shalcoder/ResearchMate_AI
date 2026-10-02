@@ -21,19 +21,19 @@ export const NAVIGATION_SECTIONS: NavigationSection[] = [
     sectionTitle: 'Research',
     items: [
       {
-        title: 'Papers Library',
+        title: 'Paper Library',
         href: '/papers',
         icon: 'BookOpen',
         roles: ['student', 'researcher', 'professor', 'admin'],
       },
       {
-        title: 'Semantic Search',
+        title: 'Literature Search',
         href: '/search',
         icon: 'Search',
         roles: ['student', 'researcher', 'professor'],
       },
       {
-        title: 'Paper Comparison',
+        title: 'Compare Papers',
         href: '/compare',
         icon: 'Columns',
         roles: ['student', 'researcher', 'professor'],
@@ -41,19 +41,19 @@ export const NAVIGATION_SECTIONS: NavigationSection[] = [
     ],
   },
   {
-    sectionTitle: 'AI Tools',
+    sectionTitle: 'AI Assistance',
     items: [
       {
-        title: 'Paper Chat & RAG',
+        title: 'Ask Research Assistant',
         href: '/chat',
         icon: 'MessageSquareText',
         roles: ['student', 'researcher', 'professor'],
-        badge: 'Grounded',
+        badge: 'Q&A',
       },
     ],
   },
   {
-    sectionTitle: 'Organize',
+    sectionTitle: 'Organization',
     items: [
       {
         title: 'Projects & Notes',
@@ -62,7 +62,7 @@ export const NAVIGATION_SECTIONS: NavigationSection[] = [
         roles: ['student', 'researcher', 'professor'],
       },
       {
-        title: 'Academic Profile',
+        title: 'My Profile',
         href: '/profile',
         icon: 'User',
         roles: ['student', 'researcher', 'professor', 'admin'],
@@ -70,21 +70,21 @@ export const NAVIGATION_SECTIONS: NavigationSection[] = [
     ],
   },
   {
-    sectionTitle: 'Admin & Faculty',
+    sectionTitle: 'Advisory & Admin',
     items: [
       {
-        title: 'Faculty Review Hub',
+        title: 'Student Supervision',
         href: '/dashboard/professor',
         icon: 'GraduationCap',
         roles: ['professor'],
         badge: 'Faculty',
       },
       {
-        title: 'Governance & Audit',
+        title: 'Department Admin',
         href: '/dashboard/admin',
         icon: 'ShieldCheck',
         roles: ['admin'],
-        badge: 'System',
+        badge: 'Admin',
       },
     ],
   },

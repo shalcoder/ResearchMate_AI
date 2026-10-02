@@ -82,22 +82,22 @@ export default function AdminDashboardPage() {
             <div className="space-y-2 max-w-2xl">
               <div className="flex items-center gap-2">
                 <span className="worldlabs-pill text-[10px] text-purple-300 border-purple-500/30 bg-purple-500/10">
-                  Platform Governance & Security
+                  Department Administration & Security
                 </span>
                 <span className="text-xs text-slate-400">System Administrator</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                System Administration & RBAC 🛡️
+                Department & User Administration 🛡️
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Monitor active institutional researchers, regulate Role-Based Access Control policies, inspect Gemini token consumption, and manage ChromaDB vector storage.
+                Manage registered faculty, researchers, and students, adjust department access roles, and monitor institutional research storage and platform activity.
               </p>
             </div>
 
             <div className="flex items-center gap-2.5">
               <span className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>All Microservices Healthy</span>
+                <span>All Services Operating Normally</span>
               </span>
             </div>
           </div>
@@ -110,34 +110,34 @@ export default function AdminDashboardPage() {
               <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Registered Accounts</span>
               <Users className="w-4 h-4 text-purple-400" />
             </div>
-            <div className="text-2xl font-bold text-white tracking-tight">4</div>
-            <p className="text-[11px] text-slate-500 mt-1">Student, Researcher, Faculty, Admin</p>
+            <div className="text-2xl font-bold text-white tracking-tight">{metrics.total_users || 4}</div>
+            <p className="text-[11px] text-slate-500 mt-1">Student, Researcher, Professor, Admin</p>
           </div>
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Gemini 2.0 Tokens</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">AI Assistant Activity</span>
               <Sparkles className="w-4 h-4 text-indigo-400" />
             </div>
-            <div className="text-2xl font-bold text-white tracking-tight">18,450</div>
-            <p className="text-[11px] text-slate-500 mt-1">Grounded RAG & Summaries</p>
+            <div className="text-2xl font-bold text-white tracking-tight">Active</div>
+            <p className="text-[11px] text-slate-500 mt-1">Summaries & Grounded Q&A</p>
           </div>
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">ChromaDB Vectors</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Searchable Sections</span>
               <Database className="w-4 h-4 text-sky-400" />
             </div>
-            <div className="text-2xl font-bold text-white tracking-tight">14</div>
-            <p className="text-[11px] text-slate-500 mt-1">HNSW Cosine index active</p>
+            <div className="text-2xl font-bold text-white tracking-tight">{metrics.total_chunks || 14}</div>
+            <p className="text-[11px] text-slate-500 mt-1">Indexed paragraphs & pages</p>
           </div>
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">PDF Storage</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">Research Storage</span>
               <HardDrive className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="text-2xl font-bold text-white tracking-tight">8.4 MB</div>
+            <div className="text-2xl font-bold text-white tracking-tight">{metrics.storage_usage_mb || 8.4} MB</div>
             <p className="text-[11px] text-slate-500 mt-1">5 Foundation papers ingested</p>
           </div>
         </div>

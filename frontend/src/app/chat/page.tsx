@@ -125,16 +125,16 @@ function ChatContent() {
             <div className="flex items-center gap-2 mb-0.5">
               <span className="worldlabs-pill text-[10px] text-indigo-300 border-indigo-500/30 bg-indigo-500/10 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Gemini 2.5 Flash Harness Agent
+                AI Research Assistant
               </span>
-              <span className="text-xs text-slate-400">Verifiable Academic Literature Citations</span>
+              <span className="text-xs text-slate-400">Verified Page and Paragraph References</span>
             </div>
-            <h1 className="text-xl font-bold text-white tracking-tight">Interactive Literature Intelligence</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight">Ask Your Paper Library</h1>
           </div>
 
           {/* Paper Selector Dropdown */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 whitespace-nowrap font-medium">Target Context:</span>
+            <span className="text-xs text-slate-400 whitespace-nowrap font-medium">Search Within:</span>
             <select
               value={selectedPaperId}
               onChange={(e) => {
@@ -144,7 +144,7 @@ function ChatContent() {
               }}
               className="bg-black/50 border border-white/15 text-xs text-white rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 max-w-xs truncate cursor-pointer"
             >
-              <option value="">All Ingested Literature (Global RAG)</option>
+              <option value="">Entire Paper Library</option>
               {papers.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.title} ({p.publication_year || 'Recent'})
@@ -167,20 +167,20 @@ function ChatContent() {
                   </div>
                   <div className="space-y-1 max-w-md">
                     <h3 className="text-base font-bold text-white">
-                      Ask anything grounded in {selectedPaper ? `"${selectedPaper.title}"` : 'your scientific corpus'}
+                      Ask anything about {selectedPaper ? `"${selectedPaper.title}"` : 'your paper library'}
                     </h3>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Every answer is cross-referenced with exact vector chunks in ChromaDB with zero hallucination.
+                      Every answer references the exact pages and paragraphs in the paper so you can verify each claim.
                     </p>
                   </div>
 
                   {/* Starter Chips */}
                   <div className="flex flex-wrap gap-2 justify-center max-w-lg pt-2">
                     {[
-                      'What is the core breakthrough?',
-                      'Explain the mathematical formulation',
+                      'What is the core breakthrough of this paper?',
+                      'Explain the methodology in simple terms',
                       'What are the acknowledged limitations?',
-                      'What datasets were used for evaluation?',
+                      'What datasets or benchmarks were used?',
                     ].map((prompt) => (
                       <button
                         key={prompt}
@@ -300,7 +300,7 @@ function ChatContent() {
                 placeholder={
                   selectedPaper
                     ? `Ask anything about "${selectedPaper.title}"...`
-                    : 'Ask across all indexed research literature...'
+                    : 'Ask any question across your paper library...'
                 }
                 className="flex-1 px-4 py-3 text-xs bg-black/50 border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
               />
@@ -309,7 +309,7 @@ function ChatContent() {
                 disabled={!inputQuery.trim() || isSending}
                 className="worldlabs-btn-primary text-xs py-3 px-6 font-semibold disabled:opacity-40"
               >
-                Send Query
+                Ask Question
               </button>
             </form>
           </div>
@@ -319,7 +319,7 @@ function ChatContent() {
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-white">
-                  Source Provenance Inspector
+                  Source Evidence & Page Quotes
                 </span>
                 <span className="worldlabs-pill text-[9px] py-0.5 px-2 text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
                   Verified
@@ -336,7 +336,7 @@ function ChatContent() {
                       Citation [{activeCitation.citation_id}]
                     </span>
                     <p className="text-[11px] text-slate-400">
-                      Exact text excerpt retrieved from vector store
+                      Exact text excerpt from the author&apos;s paper
                     </p>
                   </div>
                   <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
