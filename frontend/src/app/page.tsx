@@ -231,8 +231,8 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#08080a]/80 border-b border-white/[0.08] transition-all">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-sm shadow-lg shadow-white/20 group-hover:scale-105 transition-transform">
-              R
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-white/15 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform bg-[#09090d]">
+              <img src="/icon.png" alt="ResearchMate AI Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <span className="font-bold tracking-tight text-white text-base leading-none">
@@ -709,8 +709,8 @@ export default function Home() {
       {/* 7. Footer */}
       <footer className="py-12 px-6 border-t border-white/[0.08] max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-zinc-500 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[10px]">
-            R
+          <div className="w-6 h-6 rounded-lg overflow-hidden border border-white/10 bg-[#09090d]">
+            <img src="/icon.png" alt="ResearchMate AI" className="w-full h-full object-cover" />
           </div>
           <span>ResearchMate AI © 2026 • Academic Literature Intelligence Workspace</span>
         </div>

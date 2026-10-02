@@ -35,8 +35,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCommand }) => {
           </button>
 
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-xs shadow-md shadow-white/20 group-hover:scale-105 transition-transform">
-              R
+            <div className="w-8 h-8 rounded-xl overflow-hidden border border-white/15 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform bg-[#09090d]">
+              <img src="/icon.png" alt="ResearchMate AI" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
