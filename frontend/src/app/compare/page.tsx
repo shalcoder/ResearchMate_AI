@@ -9,7 +9,7 @@ import { api } from '@/lib/api';
 import { Button, StatusBadge, Skeleton, EmptyState } from '@/components/ui';
 import { Columns, Sparkles, MessageSquare, ArrowRight, CheckCircle2, Bookmark, ExternalLink } from 'lucide-react';
 
-export default function ComparePage() {
+function CompareContent() {
   const searchParams = useSearchParams();
   const initialTarget = searchParams.get('target') || '';
 
@@ -376,5 +376,21 @@ export default function ComparePage() {
         ) : null}
       </div>
     </DashboardLayout>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <React.Suspense
+      fallback={
+        <DashboardLayout>
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="w-8 h-8 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+          </div>
+        </DashboardLayout>
+      }
+    >
+      <CompareContent />
+    </React.Suspense>
   );
 }

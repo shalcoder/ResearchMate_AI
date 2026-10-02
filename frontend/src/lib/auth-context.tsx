@@ -11,18 +11,10 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (credentials: LoginPayload) => Promise<User>;
   register: (payload: RegisterPayload) => Promise<User>;
-  quickLogin: (role: UserRole) => Promise<User>;
   switchRole: (role: UserRole) => Promise<void>;
   hasRole: (allowedRoles: UserRole[]) => boolean;
   logout: () => void;
 }
-
-const DEMO_CREDENTIALS: Record<UserRole, LoginPayload> = {
-  researcher: { email: 'researcher@researchmate.ai', password: 'SecurePass123!' },
-  student: { email: 'student@researchmate.ai', password: 'SecurePass123!' },
-  professor: { email: 'professor@researchmate.ai', password: 'SecurePass123!' },
-  admin: { email: 'admin@researchmate.ai', password: 'SecurePass123!' },
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -108,13 +100,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const quickLogin = async (role: UserRole): Promise<User> => {
-    const creds = DEMO_CREDENTIALS[role];
-    return await login(creds);
-  };
-
   const switchRole = async (newRole: UserRole): Promise<void> => {
-    await quickLogin(newRole);
+    if (!user) return;
+    try {
+      const updated = await apiClient.updateMe({ role: newRole });
+      if (updated) {
+        const formatted = formatUser(updated);
+        setUser(formatted);
+        localStorage.setItem('researchmate_user', JSON.stringify(formatted));
+      }
+    } catch (_) {
+      const updated = { ...user, role: newRole };
+      setUser(updated);
+      localStorage.setItem('researchmate_user', JSON.stringify(updated));
+    }
   };
 
   const hasRole = (allowedRoles: UserRole[]): boolean => {
@@ -137,7 +136,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: !!user,
         login,
         register,
-        quickLogin,
         switchRole,
         hasRole,
         logout,

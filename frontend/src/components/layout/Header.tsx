@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
-import { UserRole } from '../../types';
-import { LogOut, Microscope, GraduationCap, BookOpen, Shield, Search, Menu, X } from 'lucide-react';
+import { LogOut, Search, Menu, X } from 'lucide-react';
 import { NAVIGATION_SECTIONS } from '../../lib/constants';
 
 interface HeaderProps {
@@ -14,13 +13,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenCommand }) => {
   const router = useRouter();
-  const { user, switchRole, logout, hasRole } = useAuth();
+  const { user, logout, hasRole } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleRoleSwitch = async (role: UserRole) => {
-    await switchRole(role);
-    router.push(`/dashboard/${role}`);
-  };
 
   const handleLogout = () => {
     logout();
@@ -64,50 +58,35 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCommand }) => {
           </button>
         </div>
 
-        {/* Role Switcher & User Actions */}
+        {/* User Actions */}
         <div className="flex items-center gap-3">
-          {/* Quick Role Switcher (Tablet & Desktop) */}
-          <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs">
-            <span className="text-zinc-500 px-2.5 font-bold uppercase tracking-[0.12em] text-[10px]">
-              Role:
-            </span>
-            {(['student', 'researcher', 'professor', 'admin'] as UserRole[]).map((r) => (
-              <button
-                key={r}
-                onClick={() => handleRoleSwitch(r)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all capitalize flex items-center gap-1.5 ${
-                  user?.role === r
-                    ? 'bg-white text-black shadow-sm font-bold'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
-                }`}
-              >
-                {user?.role === r && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />}
-                {r}
-              </button>
-            ))}
-          </div>
-
           {/* User Info Card */}
           {user ? (
             <div className="flex items-center gap-2.5 pl-2 sm:pl-3 border-l border-white/[0.08]">
-              <div className="w-8 h-8 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-white text-xs font-bold shadow-inner">
-                {user.name.charAt(0)}
-              </div>
-              <div className="hidden md:block text-left">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-zinc-200">{user.name}</span>
-                  <span className="worldlabs-pill py-0.5 px-2 text-[9px] border-white/[0.12] bg-white/[0.05]">
-                    {user.role}
+              <Link
+                href="/profile"
+                className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
+                title="View Academic Profile & Settings"
+              >
+                <div className="w-8 h-8 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-white text-xs font-bold shadow-inner group-hover:border-white/30 group-hover:scale-105 transition-all">
+                  {user.name.charAt(0)}
+                </div>
+                <div className="hidden md:block text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-zinc-200 group-hover:text-white transition-colors">{user.name}</span>
+                    <span className="worldlabs-pill py-0.5 px-2 text-[9px] border-white/[0.12] bg-white/[0.05]">
+                      {user.role}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 block truncate max-w-[140px]">
+                    {user.email}
                   </span>
                 </div>
-                <span className="text-[11px] text-zinc-400 block truncate max-w-[140px]">
-                  {user.email}
-                </span>
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 title="Logout"
-                className="p-2 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-full border border-transparent hover:border-rose-500/20 transition-all"
+                className="p-2 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-full border border-transparent hover:border-rose-500/20 transition-all cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -116,6 +95,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCommand }) => {
             <div className="flex items-center gap-2">
               <Link href="/login" className="worldlabs-btn-secondary py-1.5 px-4 text-xs">
                 Sign In
+              </Link>
+              <Link href="/register" className="worldlabs-btn-primary py-1.5 px-4 text-xs font-semibold">
+                Sign Up
               </Link>
             </div>
           )}
@@ -126,30 +108,48 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCommand }) => {
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-x-0 top-16 bottom-0 z-50 bg-[#08080a]/95 backdrop-blur-xl border-t border-white/10 p-5 overflow-y-auto animate-in slide-in-from-top-2 duration-150">
           <div className="space-y-6">
-            {/* Quick role switcher for mobile */}
-            <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                Switch Academic Role
-              </span>
-              <div className="grid grid-cols-2 gap-2">
-                {(['student', 'researcher', 'professor', 'admin'] as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => {
-                      handleRoleSwitch(r);
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`p-2 rounded-xl text-xs font-medium capitalize text-center transition-all ${
-                      user?.role === r
-                        ? 'bg-white text-black font-bold'
-                        : 'bg-white/5 text-slate-300 hover:bg-white/10'
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ))}
+            {/* Authenticated user profile summary in mobile drawer */}
+            {user ? (
+              <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between">
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3"
+                >
+                  <div className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white text-sm font-bold">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">{user.name}</p>
+                    <p className="text-[10px] text-zinc-400 capitalize">{user.role} • {user.email}</p>
+                  </div>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-zinc-400 hover:text-rose-400"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
-            </div>
+            ) : (
+              <div className="flex gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-1/2 worldlabs-btn-secondary py-2 text-center text-xs"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-1/2 worldlabs-btn-primary py-2 text-center text-xs font-semibold"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
 
             {/* Menu links */}
             <div className="space-y-4">

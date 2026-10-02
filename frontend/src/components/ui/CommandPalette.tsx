@@ -11,6 +11,7 @@ import {
   Sparkles,
   Upload,
   ArrowRight,
+  User,
   X
 } from 'lucide-react';
 
@@ -99,6 +100,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenUpload }) 
       href: '/projects',
       icon: <FolderKanban className="w-4 h-4 text-purple-400" />,
       shortcut: 'G W',
+    },
+    {
+      id: 'cmd-profile',
+      title: 'Academic Profile & Researcher Identity',
+      category: 'Account',
+      href: '/profile',
+      icon: <User className="w-4 h-4 text-emerald-400" />,
+      shortcut: 'G U',
     },
     {
       id: 'cmd-mamba',

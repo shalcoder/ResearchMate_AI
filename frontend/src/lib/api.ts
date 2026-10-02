@@ -242,6 +242,11 @@ export const apiClient = {
     return res.data;
   },
 
+  async updateMe(payload: any) {
+    const res = await api.put('/auth/me', payload);
+    return res.data;
+  },
+
   async logout() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('researchmate_token');

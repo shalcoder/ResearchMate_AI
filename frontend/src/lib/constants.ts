@@ -61,6 +61,12 @@ export const NAVIGATION_SECTIONS: NavigationSection[] = [
         icon: 'FolderKanban',
         roles: ['student', 'researcher', 'professor'],
       },
+      {
+        title: 'Academic Profile',
+        href: '/profile',
+        icon: 'User',
+        roles: ['student', 'researcher', 'professor', 'admin'],
+      },
     ],
   },
   {

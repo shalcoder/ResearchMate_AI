@@ -19,7 +19,7 @@ class ResearchPaper(Base):
     file_size = Column(Integer, default=0, nullable=False)
     total_pages = Column(Integer, default=1, nullable=False)
     total_chunks = Column(Integer, default=0, nullable=False)
-    owner_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    owner_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
         DateTime,

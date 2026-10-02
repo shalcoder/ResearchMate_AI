@@ -6,7 +6,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ResearchPaper, ChatMessage, Citation } from '@/types';
 import { api } from '@/lib/api';
 
-export default function ChatPage() {
+function ChatContent() {
   const searchParams = useSearchParams();
   const initialPaperId = searchParams.get('paper_id') || '';
   const initialQuery = searchParams.get('q') || '';
@@ -395,5 +395,21 @@ export default function ChatPage() {
         </div>
       </div>
     </DashboardLayout>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <DashboardLayout>
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="w-8 h-8 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+          </div>
+        </DashboardLayout>
+      }
+    >
+      <ChatContent />
+    </React.Suspense>
   );
 }

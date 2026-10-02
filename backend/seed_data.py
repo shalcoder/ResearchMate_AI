@@ -1,17 +1,15 @@
 import uuid
-from app.core.database import SessionLocal
-from app.models.user import User
+from app.core.database import SessionLocal, Base, engine
+from app.models.user import User, UserRole
 from app.models.paper import ResearchPaper, PaperChunk, PaperSummary
 from app.models.project import Project, ProjectPaper
 from app.services.vector_store import vector_store_service
+from app.core.security import get_password_hash
 
 def seed():
+    # Ensure database schema is created
+    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
-    owner = db.query(User).filter(User.email == 'researcher@researchmate.ai').first()
-    if not owner:
-        owner = db.query(User).first()
-
-    print(f"Using owner: {owner.email} ({owner.id})")
 
     papers_data = [
         {
@@ -245,7 +243,7 @@ def seed():
             file_size=1024 * 1024 * 2,
             total_pages=pdata['pages'],
             total_chunks=len(pdata['chunks']),
-            owner_id=owner.id
+            owner_id=None
         )
         db.add(paper)
         db.flush()
@@ -294,7 +292,7 @@ def seed():
         project = Project(
             title='Frontier Foundation Models & Grounded RAG Lab',
             description='Collaborative workspace analyzing trade-offs between dense attention, state-space models, reinforcement learning reasoning, and grounded non-parametric retrieval.',
-            owner_id=owner.id
+            owner_id=None
         )
         db.add(project)
         db.flush()

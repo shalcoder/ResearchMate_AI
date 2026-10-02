@@ -14,7 +14,8 @@ import {
   FolderKanban,
   GraduationCap,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  User
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -26,6 +27,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   FolderKanban: <FolderKanban className="w-4 h-4" />,
   GraduationCap: <GraduationCap className="w-4 h-4" />,
   ShieldCheck: <ShieldCheck className="w-4 h-4" />,
+  User: <User className="w-4 h-4" />,
 };
 
 export const Sidebar: React.FC = () => {

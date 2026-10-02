@@ -120,9 +120,9 @@ def list_papers(
     current_user: User = Depends(get_current_user),
 ):
     query = db.query(ResearchPaper)
-    # Admin and Professor can view all papers; Students/Researchers view their own
+    # Admin and Professor can view all papers; Students/Researchers view their own + shared library
     if current_user.role not in [UserRole.ADMIN, UserRole.PROFESSOR]:
-        query = query.filter(ResearchPaper.owner_id == current_user.id)
+        query = query.filter((ResearchPaper.owner_id == current_user.id) | (ResearchPaper.owner_id.is_(None)))
     return query.order_by(ResearchPaper.created_at.desc()).offset(skip).limit(limit).all()
 
 
@@ -138,7 +138,7 @@ def get_paper_detail(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Research paper not found.",
         )
-    if current_user.role not in [UserRole.ADMIN, UserRole.PROFESSOR] and paper.owner_id != current_user.id:
+    if current_user.role not in [UserRole.ADMIN, UserRole.PROFESSOR] and paper.owner_id and paper.owner_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access forbidden to this research paper.",

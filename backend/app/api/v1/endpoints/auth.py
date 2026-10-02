@@ -120,6 +120,32 @@ def get_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
 
+@router.put(
+    "/me",
+    response_model=UserOut,
+    summary="Update current authenticated user profile",
+    description="Updates the profile details (name, department, institution) of the current user.",
+)
+def update_me(
+    user_update: UserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    if user_update.name is not None and user_update.name.strip():
+        current_user.name = user_update.name.strip()
+    if user_update.department is not None:
+        current_user.department = user_update.department.strip() or None
+    if user_update.institution is not None:
+        current_user.institution = user_update.institution.strip() or None
+    if user_update.role is not None:
+        current_user.role = user_update.role
+
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
 @router.post(
     "/logout",
     response_model=MessageResponse,
