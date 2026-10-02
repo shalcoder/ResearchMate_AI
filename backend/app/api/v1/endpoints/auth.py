@@ -16,6 +16,7 @@ from app.schemas.user import (
     Token,
     UserCreate,
     UserOut,
+    UserUpdate,
 )
 
 router = APIRouter()

@@ -8,8 +8,12 @@ from app.core.database import Base, engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB tables on startup
-    Base.metadata.create_all(bind=engine)
+    # Initialize DB tables on startup safely
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("Database schema successfully verified/initialized.")
+    except Exception as e:
+        print(f"Notice: Database initialization deferred or encountered: {e}")
     yield
 
 
@@ -36,9 +40,14 @@ if is_wildcard:
         allow_headers=["*"],
     )
 else:
+    exact_origins = [o for o in origins if "*" not in o]
+    for local_origin in ["http://localhost:3000", "http://127.0.0.1:3000"]:
+        if local_origin not in exact_origins:
+            exact_origins.append(local_origin)
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=exact_origins,
         allow_origin_regex=r"^https://([a-zA-Z0-9_-]+\.)*(vercel\.app|github\.io)(:\d+)?$",
         allow_credentials=True,
         allow_methods=["*"],
