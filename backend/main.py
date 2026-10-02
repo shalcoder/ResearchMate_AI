@@ -66,8 +66,19 @@ else:
         allow_headers=["*"],
     )
 
-# Include API v1 router
+# Middleware to normalize repeated slashes (e.g. //auth/register -> /auth/register)
+@app.middleware("http")
+async def normalize_path_slashes(request, call_next):
+    raw_path = request.scope.get("path", "")
+    if "//" in raw_path:
+        import re
+        request.scope["path"] = re.sub(r"/+", "/", raw_path)
+    return await call_next(request)
+
+
+# Include API router with /api/v1 prefix and root fallback
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router)
 
 
 @app.get("/", tags=["Health"])

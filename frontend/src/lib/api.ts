@@ -3,9 +3,25 @@
  * Interfaces with FastAPI Backend Endpoints
  */
 
-const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? '' : 'http://localhost:8000');
-const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-const API_BASE_URL = cleanBaseUrl.endsWith('/api/v1') ? cleanBaseUrl : `${cleanBaseUrl}/api/v1`;
+function getBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!envUrl || !envUrl.trim()) {
+    return typeof window !== 'undefined' ? '/api/v1' : 'http://localhost:8000/api/v1';
+  }
+  const clean = envUrl.trim().replace(/\/+$/, '');
+  return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
+}
+
+export function resolveUrl(endpoint: string): string {
+  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+    return endpoint;
+  }
+  const base = getBaseUrl().replace(/\/+$/, '');
+  const clean = endpoint.replace(/^\/+/, '');
+  return `${base}/${clean}`;
+}
+
+export const API_BASE_URL = getBaseUrl();
 
 export interface RegisterPayload {
   name: string;
@@ -71,7 +87,7 @@ function getAuthToken(): string | null {
 }
 
 async function request(method: string, endpoint: string, data?: any, options: { headers?: Record<string, string>; params?: Record<string, any> } = {}) {
-  let url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  let url = resolveUrl(endpoint);
 
   if (options.params) {
     const searchParams = new URLSearchParams();
@@ -140,9 +156,7 @@ function upload(endpoint: string, data: FormData, options: UploadOptions = {}) {
     }
 
     const xhr = new XMLHttpRequest();
-    const url = endpoint.startsWith('http')
-      ? endpoint
-      : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const url = resolveUrl(endpoint);
     let settled = false;
 
     const cleanup = () => options.signal?.removeEventListener('abort', abort);

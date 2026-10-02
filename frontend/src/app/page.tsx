@@ -29,7 +29,7 @@ import {
 
 export default function Home() {
   const router = useRouter();
-  const { user, isAuthenticated, quickLogin, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
   const [liveQuery, setLiveQuery] = useState('');
   const [isQuerying, setIsQuerying] = useState(false);
@@ -226,12 +226,11 @@ export default function Home() {
     }
   };
 
-  const handleLaunchRole = async (role: UserRole) => {
-    try {
-      const u = await quickLogin(role);
-      router.push(`/dashboard/${u.role}`);
-    } catch (err) {
-      router.push('/login');
+  const handleLaunchRole = (role: UserRole) => {
+    if (isAuthenticated && user?.role === role) {
+      router.push(`/dashboard/${role}`);
+    } else {
+      router.push(`/login?role=${role}`);
     }
   };
 

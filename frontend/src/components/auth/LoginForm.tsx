@@ -36,19 +36,6 @@ export const LoginForm: React.FC = () => {
     }
   };
 
-  const handleQuickLogin = async (role: UserRole) => {
-    setError('');
-    setActiveQuickRole(role);
-    try {
-      const user = await quickLogin(role);
-      router.push(`/dashboard/${user.role}`);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || err?.message || `Failed to sign in as ${role}`);
-    } finally {
-      setActiveQuickRole(null);
-    }
-  };
-
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Outer Glow Card Container */}
