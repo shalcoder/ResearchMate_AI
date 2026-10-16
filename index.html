@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ResearchMate AI — Autonomous Academic Research & Grounded Literature Intelligence</title>
-  <meta name="description" content="ResearchMate AI is a frontier academic research workspace. Ingest papers, synthesize multi-paper matrices, and chat with source-grounded RAG agents backed by verifiable citations." />
+  <title>ResearchMate AI — Academic Knowledge Workspace</title>
+  <meta name="description" content="ResearchMate AI is an academic research workspace. Upload papers, explore structured summaries, compare findings, and ask questions backed by exact citations." />
   
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -266,7 +266,7 @@
             ResearchMate <span class="text-zinc-500 font-normal">AI</span>
           </span>
           <span class="text-[10px] tracking-[0.14em] uppercase text-zinc-500 font-semibold mt-0.5">
-            Autonomous Literature Intelligence
+            Academic Knowledge Workspace
           </span>
         </div>
       </a>
@@ -274,9 +274,9 @@
       <!-- Desktop Nav Links -->
       <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-zinc-400">
         <a href="#platform" class="hover:text-white transition-colors">Platform</a>
-        <a href="#rag-engine" class="hover:text-white transition-colors">Grounded RAG</a>
+        <a href="#rag-engine" class="hover:text-white transition-colors">Literature Q&A</a>
         <a href="#matrix" class="hover:text-white transition-colors">Synthesis Matrix</a>
-        <a href="#personas" class="hover:text-white transition-colors">Personas</a>
+        <a href="#personas" class="hover:text-white transition-colors">Roles</a>
         <a href="http://localhost:8000/api/v1/docs" target="_blank" class="hover:text-white transition-colors flex items-center gap-1.5">
           <span>API Specs</span>
           <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -296,24 +296,18 @@
   </header>
 
   <!-- 2. Hero Section -->
-  <section class="pt-44 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
-    <!-- Shimmering Pill Badge -->
-    <div class="shimmer-badge mb-8">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span>Grounded RAG 2.0 • Verifiable Academic Citations</span>
-    </div>
-
+  <section class="pt-40 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
     <!-- Main Headline with Animated Gradient -->
     <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-[-0.04em] text-white leading-[1.05] max-w-5xl mb-6">
-      Autonomous Academic <br />
+      Turn research papers into <br />
       <span class="animated-gradient-text">
-        Literature Intelligence
+        searchable, explainable knowledge
       </span>
     </h1>
 
     <!-- Subtitle -->
     <p class="text-base sm:text-xl text-zinc-400 max-w-2xl font-normal leading-relaxed mb-10">
-      ResearchMate AI transforms how scholars, labs, and universities conduct scientific research: grounded neural retrieval engines that parse, cross-examine, and synthesize verifiable truth from complex literature.
+      Upload papers, read structured study summaries, discover related literature, compare findings, and organize your work in one collaborative workspace.
     </p>
 
     <!-- CTAs -->
@@ -324,26 +318,26 @@
       </button>
 
       <a href="#rag-engine" class="btn-pill-secondary px-8 py-3.5 text-sm">
-        <span>Test Live RAG Agent</span>
+        <span>Explore Literature Q&A</span>
       </a>
     </div>
 
     <!-- 1-Click Fast Role Launchers Carousel -->
     <div class="flex flex-wrap items-center justify-center gap-3 p-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative z-10 shadow-lg shadow-black/40">
       <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500 px-3">
-        1-Click Access:
+        Quick Access:
       </span>
       <button onclick="handleQuickLogin('researcher')" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-cyan-300 transition-all hover:scale-105 flex items-center gap-1.5">
-        <span>🔬 Researcher</span>
+        <span>Researcher</span>
       </button>
       <button onclick="handleQuickLogin('student')" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-emerald-300 transition-all hover:scale-105 flex items-center gap-1.5">
-        <span>🎓 Student</span>
+        <span>Student</span>
       </button>
       <button onclick="handleQuickLogin('professor')" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-amber-300 transition-all hover:scale-105 flex items-center gap-1.5">
-        <span>📚 Professor</span>
+        <span>Professor</span>
       </button>
       <button onclick="handleQuickLogin('admin')" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.14] text-purple-300 transition-all hover:scale-105 flex items-center gap-1.5">
-        <span>🛡️ Admin</span>
+        <span>Admin</span>
       </button>
     </div>
   </section>
@@ -354,19 +348,17 @@
       <!-- Card Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.08]">
         <div>
-          <div class="shimmer-badge mb-2 border-cyan-500/30 bg-cyan-500/10 text-cyan-300">
-            <span>Retrieval Augmented Generation Live</span>
-          </div>
           <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-            Interactive Literature Synthesis
+            Ask Questions Across Your Papers
           </h2>
+          <p class="text-xs text-zinc-400 mt-1">Get precise answers referencing specific page sections and citations.</p>
         </div>
 
         <div class="flex items-center gap-2">
-          <span class="text-xs text-zinc-400">Backend:</span>
+          <span class="text-xs text-zinc-400">System:</span>
           <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-medium flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-            FastAPI :8000 Active
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Ready
           </span>
         </div>
       </div>
@@ -377,7 +369,7 @@
           <input
             id="ragInput"
             type="text"
-            placeholder="Ask any research question, e.g. What are the primary bottlenecks in deep retrieval RAG?"
+            placeholder="Ask any question about your papers..."
             class="w-full px-5 py-4 pr-36 rounded-2xl bg-[#09090d] border border-white/[0.12] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400/50 transition-colors shadow-inner"
           />
           <button
@@ -385,7 +377,7 @@
             type="submit"
             class="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all flex items-center gap-1.5 shadow-md active:scale-95"
           >
-            <span>Ask Agent</span>
+            <span>Ask Question</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </button>
         </div>
@@ -396,8 +388,8 @@
           <button type="button" onclick="setPreset('Compare Transformer vs State-Space Models in memory scaling')" class="px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs transition-all hover:scale-105">
             Transformer vs State-Space Models
           </button>
-          <button type="button" onclick="setPreset('What is the token retrieval precision formula in RAG?')" class="px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs transition-all hover:scale-105">
-            Token Retrieval Precision Formula
+          <button type="button" onclick="setPreset('What datasets were evaluated in the multi-layer perceptron study?')" class="px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs transition-all hover:scale-105">
+            Evaluated Datasets
           </button>
           <button type="button" onclick="setPreset('Summarize the methodology of sparse attention architectures')" class="px-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs transition-all hover:scale-105">
             Sparse Attention Methodology
@@ -409,13 +401,13 @@
       <div id="ragResultContainer" class="hidden p-6 rounded-2xl bg-[#09090d]/90 border border-cyan-500/30 relative transition-all duration-300">
         <div class="flex items-center justify-between mb-4">
           <span class="text-xs uppercase font-bold tracking-[0.14em] text-cyan-400 flex items-center gap-1.5">
-            <span>✨ Grounded Synthesis Result</span>
+            <span>Synthesized Answer</span>
           </span>
-          <span id="ragChunksCount" class="text-[11px] text-zinc-400 font-mono">2 chunks retrieved</span>
+          <span id="ragChunksCount" class="text-[11px] text-zinc-400 font-mono">2 sections referenced</span>
         </div>
 
         <p id="ragAnswerText" class="text-sm text-zinc-200 leading-relaxed mb-6 font-normal">
-          Loading grounded literature synthesis...
+          Loading answer...
         </p>
 
         <div class="pt-4 border-t border-white/[0.08]">
@@ -452,15 +444,15 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zM9 9h6M9 13h6M9 17h3"></path></svg>
           </div>
           <h3 class="text-xl font-bold tracking-tight text-white mb-2">
-            Vector Ingestion & Chunknizer
+            Paper Ingestion & Indexing
           </h3>
           <p class="text-xs text-zinc-400 leading-relaxed">
-            Automated PDF parsing with PyPDF/FastAPI, extracting sections, token densities, and indexing semantic embeddings directly into ChromaDB.
+            Fast PDF parsing extracting document sections, abstracts, methods, and full-text citations for instant search and reading.
           </p>
         </div>
         <div class="mt-8 pt-4 border-t border-white/[0.06] text-xs text-zinc-500 flex items-center justify-between">
-          <span>Section-aware chunking</span>
-          <span class="text-white font-mono">100% Provenance</span>
+          <span>Section-aware indexing</span>
+          <span class="text-white font-mono">Verified Sources</span>
         </div>
       </div>
 
@@ -524,11 +516,10 @@
         <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-cyan-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
           <div>
             <div class="flex items-center gap-2 mb-3 text-cyan-400">
-              <span class="text-lg">🔬</span>
               <span class="font-bold text-white text-base">Researcher</span>
             </div>
             <p class="text-xs text-zinc-400 leading-relaxed mb-6">
-              Deep literature indexing, RAG grounded chats, vector similarity search, and automated citation graphs.
+              Literature indexing, document Q&A, conceptual similarity search, and citation graphs.
             </p>
           </div>
           <button onclick="handleQuickLogin('researcher')" class="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]">
@@ -541,11 +532,10 @@
         <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
           <div>
             <div class="flex items-center gap-2 mb-3 text-emerald-400">
-              <span class="text-lg">🎓</span>
               <span class="font-bold text-white text-base">Student</span>
             </div>
             <p class="text-xs text-zinc-400 leading-relaxed mb-6">
-              Coursework literature review builder, simplified summaries, highlighted notes, and study companion QA.
+              Coursework reading guides, simplified summaries, highlighted notes, and study companion Q&A.
             </p>
           </div>
           <button onclick="handleQuickLogin('student')" class="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]">
@@ -558,11 +548,10 @@
         <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-amber-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
           <div>
             <div class="flex items-center gap-2 mb-3 text-amber-400">
-              <span class="text-lg">📚</span>
               <span class="font-bold text-white text-base">Professor</span>
             </div>
             <p class="text-xs text-zinc-400 leading-relaxed mb-6">
-              Supervise student submissions, review literature matrices, approve paper collections, and annotate theses.
+              Supervise student research, review literature matrices, approve paper collections, and annotate theses.
             </p>
           </div>
           <button onclick="handleQuickLogin('professor')" class="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]">
@@ -575,11 +564,10 @@
         <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-purple-500/40 transition-all hover:bg-white/[0.04] flex flex-col justify-between group">
           <div>
             <div class="flex items-center gap-2 mb-3 text-purple-400">
-              <span class="text-lg">🛡️</span>
               <span class="font-bold text-white text-base">Administrator</span>
             </div>
             <p class="text-xs text-zinc-400 leading-relaxed mb-6">
-              User lifecycle management, system vector storage health, API rate limits, audit logs, and security governance.
+              User lifecycle management, system storage health, API rate limits, audit logs, and security governance.
             </p>
           </div>
           <button onclick="handleQuickLogin('admin')" class="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 group-hover:scale-[1.02]">
@@ -597,11 +585,11 @@
       <div class="w-6 h-6 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[10px]">
         R
       </div>
-      <span>ResearchMate AI © 2026 • Autonomous Academic Literature Intelligence</span>
+      <span>ResearchMate AI © 2026 • Academic Knowledge Workspace</span>
     </div>
 
     <div class="flex items-center gap-6">
-      <a href="http://localhost:8000/api/v1/docs" target="_blank" class="hover:text-zinc-300 transition-colors">Swagger API</a>
+      <a href="http://localhost:8000/api/v1/docs" target="_blank" class="hover:text-zinc-300 transition-colors">API Docs</a>
       <a href="http://localhost:8000/api/v1/redoc" target="_blank" class="hover:text-zinc-300 transition-colors">ReDoc</a>
       <button onclick="openAuthModal('login')" class="hover:text-zinc-300 transition-colors">Sign In</button>
       <button onclick="openAuthModal('register')" class="hover:text-zinc-300 transition-colors">Register</button>
@@ -641,31 +629,31 @@
             <input id="loginPassword" type="password" placeholder="••••••••••••" required class="w-full px-4 py-2.5 rounded-xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30" />
           </div>
           <button type="submit" id="loginBtnSubmit" class="w-full btn-pill-primary mt-2">
-            Sign In with JWT Auth
+            Sign In
           </button>
         </form>
 
         <div class="relative my-6 text-center">
           <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/[0.08]"></div></div>
-          <span class="relative z-10 px-3 bg-[#111116] text-[10px] uppercase font-bold tracking-[0.14em] text-zinc-500">Fast Demo Access</span>
+          <span class="relative z-10 px-3 bg-[#111116] text-[10px] uppercase font-bold tracking-[0.14em] text-zinc-500">Quick Access</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2 text-xs">
           <button onclick="handleQuickLogin('researcher')" class="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-left hover:border-cyan-500/40 transition-colors">
-            <span class="font-bold text-cyan-300 block">🔬 Researcher</span>
-            <span class="text-[10px] text-zinc-400">RAG Chat & Compare</span>
+            <span class="font-bold text-cyan-300 block">Researcher</span>
+            <span class="text-[10px] text-zinc-400">Library & Q&A</span>
           </button>
           <button onclick="handleQuickLogin('student')" class="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-left hover:border-emerald-500/40 transition-colors">
-            <span class="font-bold text-emerald-300 block">🎓 Student</span>
-            <span class="text-[10px] text-zinc-400">Literature Reviews</span>
+            <span class="font-bold text-emerald-300 block">Student</span>
+            <span class="text-[10px] text-zinc-400">Coursework & Study</span>
           </button>
           <button onclick="handleQuickLogin('professor')" class="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-left hover:border-amber-500/40 transition-colors">
-            <span class="font-bold text-amber-300 block">📚 Professor</span>
-            <span class="text-[10px] text-zinc-400">Review Hub</span>
+            <span class="font-bold text-amber-300 block">Professor</span>
+            <span class="text-[10px] text-zinc-400">Faculty Review</span>
           </button>
           <button onclick="handleQuickLogin('admin')" class="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-left hover:border-purple-500/40 transition-colors">
-            <span class="font-bold text-purple-300 block">🛡️ Admin</span>
-            <span class="text-[10px] text-zinc-400">System Metrics</span>
+            <span class="font-bold text-purple-300 block">Admin</span>
+            <span class="text-[10px] text-zinc-400">User Management</span>
           </button>
         </div>
       </div>
