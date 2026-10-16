@@ -42,7 +42,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         </button>
       ) : showShortcut ? (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 kbd">
-          ⌘K
+          Ctrl K
         </span>
       ) : null}
     </div>

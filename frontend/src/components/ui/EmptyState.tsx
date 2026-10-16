@@ -3,6 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
+import { FileText } from 'lucide-react';
 
 export interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -32,8 +33,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         className
       )}
     >
-      <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-2xl text-slate-300 shadow-inner">
-        {icon || '🔬'}
+      <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 shadow-inner">
+        {icon || <FileText className="w-6 h-6 text-slate-400" />}
       </div>
       <div className="space-y-1.5 max-w-sm">
         <h3 className="text-base font-bold text-white tracking-tight">{title}</h3>

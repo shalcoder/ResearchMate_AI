@@ -7,7 +7,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ResearchPaper, PaperChunk, PaperSummary } from '@/types';
 import { api } from '@/lib/api';
 import { Button, StatusBadge, Badge, Skeleton, EmptyState } from '@/components/ui';
-import { MessageSquare, Columns, FileText, ArrowLeft, Download, Sparkles, Check, Bookmark } from 'lucide-react';
+import { MessageSquare, Columns, FileText, ArrowLeft, Download, Sparkles, Check, Bookmark, Cpu, AlertTriangle, Lightbulb, X } from 'lucide-react';
 
 type WorkbenchTab = 'overview' | 'summary' | 'findings' | 'methodology' | 'gaps' | 'evidence';
 
@@ -303,7 +303,7 @@ export default function PaperDetailClient() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="worldlabs-card rounded-3xl p-6 border border-emerald-500/20 space-y-3">
                       <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                        <span className="text-emerald-400 font-bold">✓</span>
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
                           Key Empirical Breakthroughs
                         </h4>
@@ -320,7 +320,7 @@ export default function PaperDetailClient() {
 
                     <div className="worldlabs-card rounded-3xl p-6 border border-amber-500/20 space-y-3">
                       <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                        <span className="text-amber-400">⚙</span>
+                        <Cpu className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                         <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300">
                           Algorithmic Formulation
                         </h4>
@@ -410,7 +410,7 @@ export default function PaperDetailClient() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="worldlabs-card rounded-3xl p-6 border border-rose-500/20 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <span className="text-rose-400 font-bold">⚠️</span>
+                  <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                   <h3 className="text-xs font-bold uppercase tracking-wider text-rose-300">
                     Acknowledged Limitations
                   </h3>
@@ -431,7 +431,7 @@ export default function PaperDetailClient() {
 
               <div className="worldlabs-card rounded-3xl p-6 border border-sky-500/20 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                  <span className="text-sky-400 font-bold">💡</span>
+                  <Lightbulb className="w-4 h-4 text-sky-400 shrink-0" />
                   <h3 className="text-xs font-bold uppercase tracking-wider text-sky-300">
                     Candidate Research Gaps
                   </h3>
@@ -517,9 +517,10 @@ export default function PaperDetailClient() {
               <h3 className="text-base font-bold text-white">Export Academic Citation</h3>
               <button
                 onClick={() => setShowCitationModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

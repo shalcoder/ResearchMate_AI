@@ -8,6 +8,7 @@ import { useAuth } from '../../../lib/auth-context';
 import { api } from '../../../lib/api';
 import { ResearchPaper, Project } from '../../../types';
 import { UploadModal } from '../../../components/papers/UploadModal';
+import { GitCompare, MessageSquare, Check, Bookmark, Lightbulb } from 'lucide-react';
 
 export default function ResearcherDashboardPage() {
   const { user } = useAuth();
@@ -69,7 +70,7 @@ export default function ResearcherDashboardPage() {
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                {greeting}, {user?.name || 'Researcher'} 🔬
+                {greeting}, {user?.name || 'Researcher'}
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                 Continue your literature review. Your library contains research papers with verified page citations, structured summaries, and cross-paper comparison tools.
@@ -88,13 +89,13 @@ export default function ResearcherDashboardPage() {
                 href="/compare"
                 className="worldlabs-btn-secondary text-xs py-2.5 px-4 font-medium flex items-center gap-2"
               >
-                <span>⚡</span> Compare Papers
+                <GitCompare className="w-3.5 h-3.5" /> Compare Papers
               </Link>
               <Link
                 href="/chat"
                 className="worldlabs-btn-secondary text-xs py-2.5 px-4 font-medium flex items-center gap-2"
               >
-                <span>💬</span> Ask Assistant
+                <MessageSquare className="w-3.5 h-3.5" /> Ask Assistant
               </Link>
             </div>
           </div>
@@ -109,7 +110,7 @@ export default function ResearcherDashboardPage() {
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">{papers.length}</div>
             <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-              <span className="text-emerald-400">✓</span> Full text & citations ready
+              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Full text & citations ready
             </p>
           </div>
 
@@ -131,7 +132,7 @@ export default function ResearcherDashboardPage() {
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">{projects.length}</div>
             <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-              <span className="text-indigo-400">★</span> Pinned project notebooks
+              <Bookmark className="w-3.5 h-3.5 text-indigo-400 shrink-0" /> Pinned project notebooks
             </p>
           </div>
 
@@ -142,7 +143,7 @@ export default function ResearcherDashboardPage() {
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">8</div>
             <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-              <span className="text-amber-400">💡</span> High-yield research opportunities
+              <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0" /> High-yield research opportunities
             </p>
           </div>
         </div>
@@ -310,7 +311,7 @@ export default function ResearcherDashboardPage() {
             <div className="worldlabs-card rounded-2xl p-6 border border-white/10 space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <span className="text-amber-400 text-sm">💡</span>
+                  <Lightbulb className="w-4 h-4 text-amber-400" />
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
                     Candidate Research Gaps
                   </h3>

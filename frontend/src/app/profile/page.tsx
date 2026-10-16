@@ -23,7 +23,8 @@ import {
   FileText,
   Save,
   LogOut,
-  ArrowRight
+  ArrowRight,
+  AlertCircle
 } from 'lucide-react';
 import { UserRole } from '@/types';
 
@@ -240,7 +241,7 @@ export default function ProfilePage() {
 
               {saveError && (
                 <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-center gap-2">
-                  <span>⚠️</span>
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
                   <span>{saveError}</span>
                 </div>
               )}

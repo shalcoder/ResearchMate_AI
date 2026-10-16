@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
                 <span className="text-xs text-slate-400">System Administrator</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                Department & User Administration 🛡️
+                Department & User Administration
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                 Manage registered faculty, researchers, and students, adjust department access roles, and monitor institutional research storage and platform activity.

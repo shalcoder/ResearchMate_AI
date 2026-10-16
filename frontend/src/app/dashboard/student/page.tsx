@@ -7,6 +7,7 @@ import { useAuth } from '../../../lib/auth-context';
 import { api } from '../../../lib/api';
 import { ResearchPaper } from '../../../types';
 import { UploadModal } from '../../../components/papers/UploadModal';
+import { BookOpen, MessageSquare, GitCompare, Folder } from 'lucide-react';
 
 export default function StudentDashboardPage() {
   const { user } = useAuth();
@@ -32,7 +33,7 @@ export default function StudentDashboardPage() {
                 <span className="text-xs text-slate-400">{user?.department || 'Computer Science'}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                Welcome back, {user?.name.split(' ')[0]} 👋
+                Welcome back, {user?.name.split(' ')[0]}
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                 Read assigned papers with simplified summaries, ask interactive questions with exact page references, and export citations for your coursework.
@@ -57,7 +58,7 @@ export default function StudentDashboardPage() {
             className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-emerald-500/40 transition-all space-y-2 group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xl">📖</span>
+              <BookOpen className="w-5 h-5 text-emerald-400" />
               <span className="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10">
                 {papers.length} Ready
               </span>
@@ -75,7 +76,7 @@ export default function StudentDashboardPage() {
             className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-indigo-500/40 transition-all space-y-2 group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xl">💬</span>
+              <MessageSquare className="w-5 h-5 text-indigo-400" />
               <span className="text-[10px] text-indigo-300 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10">
                 Verified
               </span>
@@ -93,7 +94,7 @@ export default function StudentDashboardPage() {
             className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-sky-500/40 transition-all space-y-2 group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xl">⚡</span>
+              <GitCompare className="w-5 h-5 text-sky-400" />
               <span className="text-[10px] text-sky-300 font-semibold px-2 py-0.5 rounded-full bg-sky-500/10">
                 Compare
               </span>
@@ -111,7 +112,7 @@ export default function StudentDashboardPage() {
             className="worldlabs-card rounded-2xl p-5 border border-white/10 hover:border-amber-500/40 transition-all space-y-2 group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xl">📁</span>
+              <Folder className="w-5 h-5 text-amber-400" />
               <span className="text-[10px] text-amber-300 font-semibold px-2 py-0.5 rounded-full bg-amber-500/10">
                 Collections
               </span>

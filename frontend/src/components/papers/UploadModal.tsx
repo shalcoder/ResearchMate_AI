@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
+import { X, AlertCircle, Check, UploadCloud } from 'lucide-react';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -183,13 +184,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
             aria-label="Close upload dialog"
             className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {error && (
           <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-center gap-2">
-            <span>⚠️</span>
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
         )}
@@ -210,21 +211,21 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
               <div className={`p-2 rounded-lg border text-center transition-all ${
                 currentStep ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300 font-semibold' : 'bg-white/5 border-white/5 text-slate-500'
               }`}>
-                <span>✓ Validating</span>
+                <span className="flex items-center justify-center gap-1"><Check className="w-3 h-3" /> Validating</span>
               </div>
               <div className={`p-2 rounded-lg border text-center transition-all ${
                 ['extracting', 'chunking', 'embedding', 'summarizing', 'complete'].includes(currentStep || '')
                   ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300 font-semibold'
                   : 'bg-white/5 border-white/5 text-slate-500'
               }`}>
-                <span>✓ OCR Extract</span>
+                <span className="flex items-center justify-center gap-1"><Check className="w-3 h-3" /> OCR Extract</span>
               </div>
               <div className={`p-2 rounded-lg border text-center transition-all ${
                 ['chunking', 'embedding', 'summarizing', 'complete'].includes(currentStep || '')
                   ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300 font-semibold'
                   : 'bg-white/5 border-white/5 text-slate-500'
               }`}>
-                <span>✓ Semantic Chunks</span>
+                <span className="flex items-center justify-center gap-1"><Check className="w-3 h-3" /> Semantic Chunks</span>
               </div>
               <div className={`p-2 rounded-lg border text-center transition-all ${
                 ['embedding', 'summarizing', 'complete'].includes(currentStep || '')
@@ -240,7 +241,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
                   ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold'
                   : 'bg-white/5 border-white/5 text-slate-500'
               }`}>
-                <span>{currentStep === 'complete' ? '★ Ready' : 'AI Analysis'}</span>
+                <span>{currentStep === 'complete' ? 'Ready' : 'AI Analysis'}</span>
               </div>
             </div>
           </div>
@@ -269,8 +270,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
             />
             {file ? (
               <div className="flex items-center justify-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
-                  ✓
+                <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div className="text-left">
                   <div className="text-sm font-semibold text-white">{file.name}</div>
@@ -281,8 +282,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="w-12 h-12 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto text-xl">
-                  📁
+                <div className="w-12 h-12 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
+                  <UploadCloud className="w-6 h-6 text-indigo-400" />
                 </div>
                 <div className="text-xs font-semibold text-white">
                   Drop scientific PDF here, or <span className="text-indigo-400 underline">browse files</span>

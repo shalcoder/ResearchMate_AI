@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCommand }) => {
           >
             <Search className="w-3.5 h-3.5 text-slate-500" />
             <span className="text-[11px]">Command Menu</span>
-            <span className="kbd text-[9px] ml-1">⌘K</span>
+            <span className="kbd text-[9px] ml-1">Ctrl K</span>
           </button>
         </div>
 

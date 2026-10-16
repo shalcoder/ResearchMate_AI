@@ -7,7 +7,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ResearchPaper, PaperComparison } from '@/types';
 import { api } from '@/lib/api';
 import { Button, StatusBadge, Skeleton, EmptyState } from '@/components/ui';
-import { Columns, Sparkles, MessageSquare, ArrowRight, CheckCircle2, Bookmark, ExternalLink } from 'lucide-react';
+import { Columns, Sparkles, MessageSquare, ArrowRight, CheckCircle2, Bookmark, ExternalLink, AlertCircle, Lightbulb } from 'lucide-react';
 
 function CompareContent() {
   const searchParams = useSearchParams();
@@ -112,7 +112,7 @@ function CompareContent() {
 
         {error && (
           <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-center gap-2.5">
-            <span>⚠️</span>
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -319,8 +319,8 @@ function CompareContent() {
             {activeComparisonView === 'gaps' && (
               <div className="worldlabs-card rounded-3xl p-8 border border-indigo-500/30 bg-gradient-to-br from-[#12121c] via-[#0c0c12] to-[#08080a] space-y-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl border border-amber-500/20">
-                    💡
+                  <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+                    <Lightbulb className="w-5 h-5 text-amber-400" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white tracking-tight">

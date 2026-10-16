@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
-import { ArrowRight, Sparkles, KeyRound } from 'lucide-react';
+import { ArrowRight, Sparkles, KeyRound, AlertCircle } from 'lucide-react';
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -61,7 +61,7 @@ export const LoginForm: React.FC = () => {
         {/* Error Alert */}
         {error && (
           <div className="mb-6 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-2.5">
-            <span className="text-sm">⚠️</span>
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
             <div className="leading-relaxed">{error}</div>
           </div>
         )}

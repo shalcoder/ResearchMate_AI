@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserRole } from '../../types';
+import { Lock } from 'lucide-react';
 
 interface UnauthorizedStateProps {
   requiredRoles: UserRole[];
@@ -14,8 +15,8 @@ export const UnauthorizedState: React.FC<UnauthorizedStateProps> = ({
 }) => {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-slate-900/60 border border-rose-900/30 rounded-2xl backdrop-blur-xl shadow-2xl">
-      <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-5 text-2xl font-bold shadow-inner">
-        🔒
+      <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-5 shadow-inner">
+        <Lock className="w-7 h-7 text-rose-400" />
       </div>
       <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-full mb-3">
         403 Access Denied

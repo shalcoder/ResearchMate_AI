@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ResearchPaper, ChatMessage, Citation } from '@/types';
 import { api } from '@/lib/api';
+import { MessageSquare, Check, Search } from 'lucide-react';
 
 function ChatContent() {
   const searchParams = useSearchParams();
@@ -162,8 +163,8 @@ function ChatContent() {
             <div className="flex-1 overflow-y-auto space-y-5 pr-2">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
-                  <div className="w-14 h-14 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-2xl border border-indigo-500/20">
-                    💬
+                  <div className="w-14 h-14 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                    <MessageSquare className="w-6 h-6 text-indigo-400" />
                   </div>
                   <div className="space-y-1 max-w-md">
                     <h3 className="text-base font-bold text-white">
@@ -238,7 +239,13 @@ function ChatContent() {
                               onClick={() => handleCopyMessage(m.id, m.content)}
                               className="text-slate-400 hover:text-white px-2 py-0.5 rounded hover:bg-white/10 transition-colors"
                             >
-                              {copiedId === m.id ? '✓ Copied' : 'Copy'}
+                              {copiedId === m.id ? (
+                                <span className="flex items-center gap-1 text-emerald-400">
+                                  <Check className="w-3 h-3" /> Copied
+                                </span>
+                              ) : (
+                                'Copy'
+                              )}
                             </button>
                             <button
                               onClick={handleRegenerate}
@@ -383,8 +390,8 @@ function ChatContent() {
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-3 text-slate-400">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-xl text-slate-500">
-                  🔍
+                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
+                  <Search className="w-5 h-5 text-slate-500" />
                 </div>
                 <h4 className="text-xs font-semibold text-white">No Citation Selected</h4>
                 <p className="text-xs text-slate-500 leading-relaxed max-w-xs">

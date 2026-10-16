@@ -67,7 +67,7 @@ export default function ProfessorDashboardPage() {
                 <span className="text-xs text-slate-400">{user?.department || 'Advanced AI Systems'}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                Welcome back, {user?.name || 'Professor'} 🎓
+                Welcome back, {user?.name || 'Professor'}
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                 Supervise graduate research dossiers, review student methodology notes and citations, curate lab paper collections, and broadcast reading recommendations.
