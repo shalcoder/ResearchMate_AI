@@ -132,7 +132,7 @@ export default function PaperDetailClient() {
           <div className="flex items-center gap-2">
             <StatusBadge
               status={paper.total_chunks > 0 ? 'indexed' : 'processing'}
-              label={`${paper.total_chunks} Vector Chunks`}
+              label={`${paper.total_chunks} Indexed Sections`}
             />
           </div>
         </div>
