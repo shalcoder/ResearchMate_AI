@@ -30,12 +30,14 @@ export default function LoginPage() {
 
       {/* Main Form Center */}
       <div className="w-full my-auto py-12 relative z-10">
-        <LoginForm />
+        <React.Suspense fallback={<div className="text-center text-zinc-500 py-12">Loading login...</div>}>
+          <LoginForm />
+        </React.Suspense>
       </div>
 
       {/* Bottom minimal footer */}
       <div className="w-full max-w-7xl mx-auto text-center py-4 text-xs text-zinc-500 relative z-20">
-        © 2026 ResearchMate AI • Grounded Multimodal Academic Workspace
+        © 2026 ResearchMate AI • Academic Knowledge Workspace
       </div>
     </div>
   );

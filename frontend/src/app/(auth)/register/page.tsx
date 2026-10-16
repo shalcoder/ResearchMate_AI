@@ -35,7 +35,7 @@ export default function RegisterPage() {
 
       {/* Bottom minimal footer */}
       <div className="w-full max-w-7xl mx-auto text-center py-4 text-xs text-zinc-500 relative z-20">
-        © 2026 ResearchMate AI • Grounded Multimodal Academic Workspace
+        © 2026 ResearchMate AI • Academic Knowledge Workspace
       </div>
     </div>
   );

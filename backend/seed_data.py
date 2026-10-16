@@ -302,6 +302,32 @@ def seed():
             db.add(pp)
         print(f"Created project: {project.title}")
 
+    # Seed Amrita Vishwa Vidyapeetham Academic Users
+    amrita_users = [
+        ('researcher@cb.amrita.edu', 'Dr. Steve Alexander', UserRole.RESEARCHER, 'Computational Intelligence Lab', 'Amrita Vishwa Vidyapeetham'),
+        ('student@cb.students.amrita.edu', 'Yashwanth M', UserRole.STUDENT, 'Computer Science & Engineering', 'Amrita Vishwa Vidyapeetham'),
+        ('professor@cb.amrita.edu', 'Prof. Vishal M', UserRole.PROFESSOR, 'Department of AI & Data Science', 'Amrita Vishwa Vidyapeetham'),
+        ('admin@cb.amrita.edu', 'System Administrator', UserRole.ADMIN, 'ICTS & High Performance Computing', 'Amrita Vishwa Vidyapeetham'),
+    ]
+    pwd_hash = get_password_hash('Password123!')
+    for email, name, role, dept, inst in amrita_users:
+        u = db.query(User).filter(User.email == email).first()
+        if not u:
+            u = User(
+                name=name,
+                email=email,
+                hashed_password=pwd_hash,
+                role=role,
+                department=dept,
+                institution=inst,
+                is_active=True
+            )
+            db.add(u)
+            print(f"Created Amrita user: {email}")
+        else:
+            u.hashed_password = pwd_hash
+            u.is_active = True
+
     db.commit()
     print("Database seeding completed!")
     db.close()

@@ -6,10 +6,10 @@ from app.models.user import UserRole
 
 class UserBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, examples=["Yashwanth Marimuthu"])
-    email: EmailStr = Field(..., examples=["yashwanth@researchmate.ai"])
+    email: EmailStr = Field(..., examples=["yashwanth@cb.students.amrita.edu"])
     role: UserRole = Field(default=UserRole.STUDENT, examples=["student"])
-    department: Optional[str] = Field(None, max_length=150, examples=["Computer Science"])
-    institution: Optional[str] = Field(None, max_length=150, examples=["Research University"])
+    department: Optional[str] = Field(None, max_length=150, examples=["Computer Science & Engineering"])
+    institution: Optional[str] = Field(None, max_length=150, examples=["Amrita Vishwa Vidyapeetham"])
 
 
 class UserCreate(UserBase):
@@ -38,8 +38,8 @@ class UserOut(UserBase):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr = Field(..., examples=["yashwanth@researchmate.ai"])
-    password: str = Field(..., examples=["SecurePass123!"])
+    email: EmailStr = Field(..., examples=["student@cb.students.amrita.edu"])
+    password: str = Field(..., examples=["Password123!"])
 
 
 class Token(BaseModel):

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { UserRole } from '../../types';
 import { useAuth } from '../../lib/auth-context';
-import { ArrowRight, Sparkles, GraduationCap, Microscope, BookOpen, Shield, AlertCircle } from 'lucide-react';
+import { ArrowRight, Sparkles, GraduationCap, Microscope, BookOpen, Shield, AlertCircle, School } from 'lucide-react';
 
 interface FieldErrors {
   name?: string;
@@ -19,25 +19,25 @@ const ROLES: { role: UserRole; title: string; desc: string; icon: React.ReactNod
   {
     role: 'researcher',
     title: 'Researcher',
-    desc: 'Literature reviews, paper synthesis, comparisons & citation exports',
+    desc: 'Literature reviews, paper synthesis & citation exports',
     icon: <Microscope className="w-4 h-4 text-cyan-400" />,
   },
   {
     role: 'student',
     title: 'Student',
-    desc: 'Coursework study guides, simplified summaries & paper Q&A',
+    desc: 'Coursework study guides & paper Q&A',
     icon: <GraduationCap className="w-4 h-4 text-emerald-400" />,
   },
   {
     role: 'professor',
     title: 'Professor',
-    desc: 'Supervising student reading lists, advisory & project collections',
+    desc: 'Supervising student reading lists & advisory',
     icon: <BookOpen className="w-4 h-4 text-amber-400" />,
   },
   {
     role: 'admin',
     title: 'Administrator',
-    desc: 'Department accounts, access permissions & institutional overview',
+    desc: 'Department accounts & institutional overview',
     icon: <Shield className="w-4 h-4 text-purple-400" />,
   },
 ];
@@ -51,9 +51,9 @@ export const RegisterForm: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'researcher' as UserRole,
-    department: 'Computer Science',
-    institution: 'Research University',
+    role: 'student' as UserRole,
+    department: 'Computer Science & Engineering',
+    institution: 'Amrita Vishwa Vidyapeetham',
   });
 
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -122,15 +122,15 @@ export const RegisterForm: React.FC = () => {
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-8 relative z-10">
           <div className="worldlabs-pill mb-4 border-indigo-500/20 bg-indigo-500/10 text-indigo-300">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>New Academic Profile</span>
+            <School className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Amrita Institutional Registration</span>
           </div>
 
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
             Create Account
           </h1>
           <p className="text-xs text-zinc-400 max-w-sm">
-            Join ResearchMate AI to organize research papers, ask questions with verified page citations, and collaborate with your lab.
+            Join ResearchMate AI with your Amrita institutional credentials.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export const RegisterForm: React.FC = () => {
             </label>
             <input
               type="text"
-              placeholder="Dr. Fei-Fei Li"
+              placeholder="e.g. Yashwanth Marimuthu"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
@@ -158,33 +158,18 @@ export const RegisterForm: React.FC = () => {
             {errors.name && <p className="text-[11px] text-rose-400 mt-1">{errors.name}</p>}
           </div>
 
-          {/* Academic Email */}
-          <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-              Academic Email
-            </label>
-            <input
-              type="email"
-              placeholder="feifei@stanford.edu"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
-            />
-            {errors.email && <p className="text-[11px] text-rose-400 mt-1">{errors.email}</p>}
-          </div>
-
           {/* Academic Role Selection */}
           <div>
             <label className="block text-xs font-medium text-zinc-300 mb-2">
               Primary Academic Role
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {ROLES.map((r) => (
                 <button
                   key={r.role}
                   type="button"
                   onClick={() => setFormData({ ...formData, role: r.role })}
-                  className={`p-3 rounded-2xl text-left border transition-all ${
+                  className={`p-2.5 rounded-2xl text-left border transition-all ${
                     formData.role === r.role
                       ? 'bg-white/[0.08] border-indigo-400/50 shadow-md shadow-indigo-500/10'
                       : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
@@ -200,6 +185,54 @@ export const RegisterForm: React.FC = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Academic Email */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-medium text-zinc-300">
+                Institutional Email
+              </label>
+              <span className="text-[10px] text-zinc-400">
+                {formData.role === 'student' ? 'Format: @cb.students.amrita.edu' : 'Format: @cb.amrita.edu'}
+              </span>
+            </div>
+            <input
+              type="email"
+              placeholder={
+                formData.role === 'student'
+                  ? 'rollno@cb.students.amrita.edu'
+                  : 'faculty@cb.amrita.edu'
+              }
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-4 py-3 rounded-2xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+            />
+            {/* Domain Auto-Append Chips */}
+            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+              <span className="text-[10px] text-zinc-500">Domain helpers:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const prefix = formData.email.split('@')[0] || '';
+                  setFormData({ ...formData, email: `${prefix}@cb.students.amrita.edu` });
+                }}
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+              >
+                + @cb.students.amrita.edu
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const prefix = formData.email.split('@')[0] || '';
+                  setFormData({ ...formData, email: `${prefix}@cb.amrita.edu` });
+                }}
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all"
+              >
+                + @cb.amrita.edu
+              </button>
+            </div>
+            {errors.email && <p className="text-[11px] text-rose-400 mt-1">{errors.email}</p>}
           </div>
 
           {/* Passwords */}
@@ -267,7 +300,7 @@ export const RegisterForm: React.FC = () => {
               </label>
               <input
                 type="text"
-                placeholder="Computer Science"
+                placeholder="Computer Science & Engineering"
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 className="w-full px-4 py-2.5 rounded-2xl bg-[#09090d] border border-white/[0.08] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
@@ -279,7 +312,7 @@ export const RegisterForm: React.FC = () => {
               </label>
               <input
                 type="text"
-                placeholder="Research University"
+                placeholder="Amrita Vishwa Vidyapeetham"
                 value={formData.institution}
                 onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
                 className="w-full px-4 py-2.5 rounded-2xl bg-[#09090d] border border-white/[0.08] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"

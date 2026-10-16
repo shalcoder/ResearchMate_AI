@@ -622,7 +622,7 @@
         <form onsubmit="handleFormLogin(event)" class="space-y-4">
           <div>
             <label class="block text-xs font-medium text-zinc-300 mb-1.5">Academic Email</label>
-            <input id="loginEmail" type="email" placeholder="researcher@researchmate.ai" required class="w-full px-4 py-2.5 rounded-xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30" />
+            <input id="loginEmail" type="email" placeholder="student@cb.students.amrita.edu or faculty@cb.amrita.edu" required class="w-full px-4 py-2.5 rounded-xl bg-[#09090d] border border-white/[0.08] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30" />
           </div>
           <div>
             <label class="block text-xs font-medium text-zinc-300 mb-1.5">Password</label>
@@ -667,7 +667,7 @@
           </div>
           <div>
             <label class="block text-xs font-medium text-zinc-300 mb-1">Academic Email</label>
-            <input id="regEmail" type="email" placeholder="feifei@stanford.edu" required class="w-full px-3 py-2 rounded-xl bg-[#09090d] border border-white/[0.08] text-xs text-white" />
+            <input id="regEmail" type="email" placeholder="rollno@cb.students.amrita.edu or faculty@cb.amrita.edu" required class="w-full px-3 py-2 rounded-xl bg-[#09090d] border border-white/[0.08] text-xs text-white" />
           </div>
           <div>
             <label class="block text-xs font-medium text-zinc-300 mb-1">Role</label>
@@ -922,13 +922,13 @@
 
     async function handleQuickLogin(role) {
       const emailMap = {
-        researcher: 'researcher@researchmate.ai',
-        student: 'student@researchmate.ai',
-        professor: 'professor@researchmate.ai',
-        admin: 'admin@researchmate.ai'
+        researcher: 'researcher@cb.amrita.edu',
+        student: 'student@cb.students.amrita.edu',
+        professor: 'professor@cb.amrita.edu',
+        admin: 'admin@cb.amrita.edu'
       };
       const email = emailMap[role];
-      const password = 'SecurePass123!';
+      const password = 'Password123!';
 
       try {
         const res = await fetch(`${API_BASE}/auth/login`, {

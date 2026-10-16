@@ -156,12 +156,12 @@ export default function ProfilePage() {
                 <p className="text-xs text-slate-400 flex items-center gap-3 flex-wrap">
                   <span className="flex items-center gap-1">
                     <Mail className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{user?.email || 'researcher@researchmate.ai'}</span>
+                    <span>{user?.email || 'researcher@cb.amrita.edu'}</span>
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
                     <School className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{user?.institution || 'Academic Institute'}</span>
+                    <span>{user?.institution || 'Amrita Vishwa Vidyapeetham'}</span>
                   </span>
                 </p>
               </div>
