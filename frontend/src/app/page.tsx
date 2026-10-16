@@ -248,8 +248,8 @@ export default function Home() {
             <a href="#workflow" className="hover:text-white transition-colors">
               How It Works
             </a>
-            <a href="#rag-agent" className="hover:text-white transition-colors">
-              AI Assistant
+            <a href="#assistant" className="hover:text-white transition-colors">
+              Research Assistant
             </a>
             <a href="#platform" className="hover:text-white transition-colors">
               Features
@@ -304,13 +304,7 @@ export default function Home() {
       </header>
 
       {/* 2. Hero Section (Product-Centric) */}
-      <section className="pt-44 pb-16 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
-        {/* Shimmering Pill Badge */}
-        <div className="worldlabs-pill mb-6 border-white/[0.12] bg-white/[0.04]">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Grounded RAG 2.0 • Verifiable Academic Citations</span>
-        </div>
-
+      <section className="pt-40 pb-16 px-6 max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
         {/* Hero Title */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-[-0.04em] text-white leading-[1.08] max-w-4xl mb-6">
           Turn research papers into <br />
@@ -321,7 +315,7 @@ export default function Home() {
 
         {/* Subtitle */}
         <p className="text-base sm:text-lg text-zinc-400 max-w-2xl font-normal leading-relaxed mb-10">
-          Upload papers, understand them with grounded AI, discover related literature, compare research, identify gaps, and organize your work in one workspace.
+          Upload papers, read structured study summaries, discover related literature, compare findings, and organize your work in one collaborative workspace.
         </p>
 
         {/* CTA Button Group */}
@@ -415,18 +409,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Interactive Live AI Agent Playground */}
-      <section id="rag-agent" className="py-12 px-6 max-w-6xl mx-auto relative z-10">
+      {/* 4. Interactive Live Assistant Playground */}
+      <section id="assistant" className="py-12 px-6 max-w-6xl mx-auto relative z-10">
         <div
           onMouseMove={handleCardMouseMove}
           className="worldlabs-card rounded-3xl p-8 sm:p-12 relative overflow-hidden"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.08]">
             <div>
-              <div className="worldlabs-pill mb-2 border-cyan-500/20 bg-cyan-500/10 text-cyan-300">
-                <Cpu className="w-3 h-3 text-cyan-400" />
-                <span>Grounded RAG Engine Active</span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                 Interactive Literature Synthesis
               </h2>
@@ -446,7 +436,7 @@ export default function Home() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Ask any research question, e.g. What are the key bottlenecks in current RAG systems?"
+                placeholder="Ask a question about your paper, e.g. What methodology is used?"
                 value={liveQuery}
                 onChange={(e) => setLiveQuery(e.target.value)}
                 className="w-full px-5 py-4 pr-32 rounded-2xl bg-[#09090d] border border-white/[0.12] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400/50 transition-colors shadow-inner"
@@ -457,10 +447,10 @@ export default function Home() {
                 className="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all disabled:opacity-40 flex items-center gap-1.5 active:scale-95 shadow-md"
               >
                 {isQuerying ? (
-                  <span>Synthesizing...</span>
+                  <span>Searching...</span>
                 ) : (
                   <>
-                    <span>Ask Agent</span>
+                    <span>Ask Assistant</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
@@ -474,7 +464,7 @@ export default function Home() {
               </span>
               {[
                 'Compare Transformer vs State-Space Models',
-                'What is the token retrieval precision formula in RAG?',
+                'What are the primary findings and experimental results?',
                 'Summarize the methodology of sparse attention',
               ].map((preset) => (
                 <button

@@ -452,18 +452,18 @@ export default function PaperDetailClient() {
             </div>
           )}
 
-          {/* TAB 6: VECTOR CHUNKS & PAGE EVIDENCE */}
+          {/* TAB 6: INDEXED SECTIONS & PAGE EVIDENCE */}
           {activeTab === 'evidence' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white tracking-tight">ChromaDB Chunk Representations</h3>
+                  <h3 className="text-base font-bold text-white tracking-tight">Indexed Document Sections</h3>
                   <p className="text-xs text-slate-400">
-                    Exact vectorized chunks indexed with cosine similarity for zero-hallucination Grounded RAG.
+                    Document paragraphs and sections indexed with page citations for verified reading.
                   </p>
                 </div>
                 <span className="text-xs font-mono text-slate-400">
-                  Total: {chunks.length} Vectors
+                  Total: {chunks.length} Sections
                 </span>
               </div>
 

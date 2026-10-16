@@ -21,7 +21,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({ paper, onDelete }) => {
         <div className="flex items-center gap-2.5 flex-wrap">
           <StatusBadge
             status={paper.total_chunks > 0 ? 'indexed' : 'processing'}
-            label={`${paper.total_chunks} Vectors`}
+            label={`${paper.total_chunks} Sections`}
           />
           <span className="text-[11px] font-semibold text-indigo-300">
             {paper.venue ? paper.venue.split('(')[0] : 'Academic'}

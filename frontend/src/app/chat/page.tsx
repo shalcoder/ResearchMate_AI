@@ -283,7 +283,7 @@ function ChatContent() {
                     </div>
 
                     <span className="text-[10px] text-slate-500 mt-1 px-2">
-                      {m.role === 'user' ? 'You' : 'ResearchMate Grounded RAG'}
+                      {m.role === 'user' ? 'You' : 'Research Assistant'}
                     </span>
                   </div>
                 ))
@@ -292,7 +292,7 @@ function ChatContent() {
               {isSending && (
                 <div className="flex items-center gap-2.5 text-xs text-indigo-400 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl w-fit">
                   <div className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                  <span>Retrieving semantic chunks from ChromaDB & formulating answer...</span>
+                  <span>Searching paper text & formulating answer...</span>
                 </div>
               )}
               <div ref={messagesEndRef} />

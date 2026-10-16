@@ -54,7 +54,7 @@ export const LoginForm: React.FC = () => {
             Sign In
           </h1>
           <p className="text-xs text-zinc-400 max-w-xs">
-            Authenticate to access your indexed literature, grounded RAG sessions, and collaboration workspaces.
+            Sign in to access your papers, reading notes, and research workspaces.
           </p>
         </div>
 

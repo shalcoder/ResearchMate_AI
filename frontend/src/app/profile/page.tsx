@@ -210,11 +210,11 @@ export default function ProfilePage() {
 
           <div className="worldlabs-card rounded-2xl p-5 border border-white/10 space-y-1">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="text-[10px] font-bold uppercase tracking-wider">Grounding RAG</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">Citation Engine</span>
               <Sparkles className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">Active</div>
-            <p className="text-[11px] text-slate-500">0-hallucination citations</p>
+            <p className="text-[11px] text-slate-500">Verified page citations</p>
           </div>
         </div>
 
@@ -357,16 +357,16 @@ export default function ProfilePage() {
 
                 <div>
                   <label className="block text-slate-300 font-semibold mb-1.5">
-                    RAG Grounding Cutoff
+                    Citation Confidence Threshold
                   </label>
                   <select
                     value={similarityThreshold}
                     onChange={(e) => setSimilarityThreshold(e.target.value)}
                     className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 cursor-pointer"
                   >
-                    <option value="90">90% Cosine Similarity (Strict)</option>
-                    <option value="85">85% Cosine Similarity (Recommended)</option>
-                    <option value="80">80% Cosine Similarity (Broad)</option>
+                    <option value="90">90% Similarity (Strict Precision)</option>
+                    <option value="85">85% Similarity (Balanced)</option>
+                    <option value="80">80% Similarity (Broad Context)</option>
                   </select>
                 </div>
               </div>
@@ -389,10 +389,10 @@ export default function ProfilePage() {
 
               <div className="space-y-2">
                 {[
-                  { role: 'researcher', title: 'Researcher', desc: 'Cross-paper synthesis & RAG chat', icon: <Microscope className="w-4 h-4 text-cyan-400" /> },
-                  { role: 'student', title: 'Student', desc: 'Paper summaries & coursework QA', icon: <GraduationCap className="w-4 h-4 text-emerald-400" /> },
+                  { role: 'researcher', title: 'Researcher', desc: 'Cross-paper synthesis & literature Q&A', icon: <Microscope className="w-4 h-4 text-cyan-400" /> },
+                  { role: 'student', title: 'Student', desc: 'Paper summaries & coursework Q&A', icon: <GraduationCap className="w-4 h-4 text-emerald-400" /> },
                   { role: 'professor', title: 'Professor', desc: 'Faculty advisory & reviews', icon: <BookOpen className="w-4 h-4 text-amber-400" /> },
-                  { role: 'admin', title: 'Administrator', desc: 'Platform governance & RBAC', icon: <Shield className="w-4 h-4 text-purple-400" /> },
+                  { role: 'admin', title: 'Administrator', desc: 'Platform governance & roles', icon: <Shield className="w-4 h-4 text-purple-400" /> },
                 ].map((item) => (
                   <button
                     key={item.role}
@@ -440,7 +440,7 @@ export default function ProfilePage() {
                   href="/chat"
                   className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white flex items-center justify-between transition-colors"
                 >
-                  <span>Grounded RAG Chat</span>
+                  <span>Paper Q&A Assistant</span>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                 </Link>
                 <Link

@@ -165,7 +165,7 @@ export default function ResearcherDashboardPage() {
                   {activeProject.title}
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  {activeProject.description || 'Frontier Foundation Models and Grounded RAG benchmark collection.'}
+                  {activeProject.description || 'Literature review and benchmark papers collection.'}
                 </p>
               </div>
 
@@ -317,7 +317,7 @@ export default function ResearcherDashboardPage() {
                   </h3>
                 </div>
                 <span className="text-[10px] text-indigo-300 font-semibold px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
-                  Gemini Grounded
+                  Synthesized Gaps
                 </span>
               </div>
 
@@ -368,7 +368,7 @@ export default function ResearcherDashboardPage() {
               <div className="space-y-2">
                 {[
                   'Why does multi-head attention scale quadratically with sequence length?',
-                  'How does parametric vs non-parametric memory interact in RAG?',
+                  'How does selective state space memory compare to full attention?',
                   'What is the cold-start data strategy in DeepSeek-R1?',
                 ].map((prompt, idx) => (
                   <button

@@ -201,7 +201,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-white flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                Autonomous Ingestion in Progress
+                Processing & Indexing Paper...
               </span>
               <span className="text-slate-400 font-mono">{uploadPercent}% uploaded</span>
             </div>

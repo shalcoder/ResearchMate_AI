@@ -70,10 +70,10 @@ export const PaperCard: React.FC<PaperCardProps> = ({ paper, onDelete }) => {
             <Check className="w-2.5 h-2.5" /> Parsed
           </span>
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
-            <span>●</span> {paper.total_chunks} Vectors
+            <span>●</span> {paper.total_chunks} Sections
           </span>
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-            <Check className="w-2.5 h-2.5" /> RAG Grounded
+            <Check className="w-2.5 h-2.5" /> Q&A Ready
           </span>
           {paper.doi && (
             <span className="text-[10px] text-slate-500 font-mono truncate max-w-[120px]" title={paper.doi}>

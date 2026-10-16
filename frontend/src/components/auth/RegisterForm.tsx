@@ -130,7 +130,7 @@ export const RegisterForm: React.FC = () => {
             Create Account
           </h1>
           <p className="text-xs text-zinc-400 max-w-sm">
-            Join ResearchMate AI to index literature, run grounded RAG analysis, and collaborate with your lab.
+            Join ResearchMate AI to organize research papers, ask questions with verified page citations, and collaborate with your lab.
           </p>
         </div>
 

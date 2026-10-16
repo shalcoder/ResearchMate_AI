@@ -71,15 +71,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenUpload }) 
     },
     {
       id: 'cmd-chat',
-      title: 'Grounded Paper Chat (RAG 2.0)',
-      category: 'AI Tools',
+      title: 'Ask Research Assistant (Q&A)',
+      category: 'Assistant',
       href: '/chat',
       icon: <MessageSquareText className="w-4 h-4 text-emerald-400" />,
       shortcut: 'G C',
     },
     {
       id: 'cmd-compare',
-      title: 'Compare Foundation Papers',
+      title: 'Compare Research Papers',
       category: 'Research',
       href: '/compare',
       icon: <Columns className="w-4 h-4 text-amber-400" />,
