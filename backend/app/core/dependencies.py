@@ -38,6 +38,21 @@ def get_current_user(
     return user
 
 
+def get_current_user_optional(
+    db: Session = Depends(get_db),
+    token: Optional[str] = Depends(oauth2_scheme),
+) -> Optional[User]:
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if not payload:
+        return None
+    user_id: Optional[str] = payload.get("sub")
+    if not user_id:
+        return None
+    return db.query(User).filter(User.id == user_id).first()
+
+
 def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:

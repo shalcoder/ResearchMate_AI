@@ -53,9 +53,15 @@ if is_wildcard:
     )
 else:
     exact_origins = [o for o in origins if "*" not in o]
-    for local_origin in ["http://localhost:3000", "http://127.0.0.1:3000"]:
-        if local_origin not in exact_origins:
-            exact_origins.append(local_origin)
+    for extra_origin in [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "https://research-mate-ai-ten.vercel.app",
+    ]:
+        if extra_origin not in exact_origins:
+            exact_origins.append(extra_origin)
 
     app.add_middleware(
         CORSMiddleware,
@@ -64,6 +70,7 @@ else:
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        expose_headers=["*"],
     )
 
 # Middleware to normalize repeated slashes (e.g. //auth/register -> /auth/register)
